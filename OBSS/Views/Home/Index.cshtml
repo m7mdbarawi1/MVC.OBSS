@@ -1,0 +1,195 @@
+﻿@model IEnumerable<OBSS.Models.Book>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<link href="~/css/home/index.css" rel="stylesheet" />
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Available Books</h1>
+
+    <!-- Search and Filter Controls -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-2">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search by title, author, or subject...">
+        </div>
+        <div class="col-md-6 mb-2">
+            <select id="categoryFilter" class="form-control">
+                <option value="">All Categories</option>
+                @foreach (var category in Model.Select(b => b.Category?.CategoryDesc).Distinct())
+                {
+                    if (!string.IsNullOrEmpty(category))
+                    {
+                        <option value="@category">@category</option>
+                    }
+                }
+            </select>
+        </div>
+    </div>
+
+    <!-- Books Grid -->
+    <div class="books-grid" id="booksGrid">
+        @foreach (var book in Model)
+        {
+            <a href="@Url.Action("Details", "Books", new { id = book.BookId })" class="book-card-link">
+                <div class="book-card"
+                     data-title="@book.BookTitle.ToLower()"
+                     data-author="@book.Author.ToLower()"
+                     data-subject="@book.Subject?.ToLower()"
+                     data-category="@book.Category?.CategoryDesc">
+
+                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                    {
+                        <img src="@book.CoverImageUrl" alt="@book.BookTitle">
+                    }
+                    else
+                    {
+                        <img src="~/images/no-image.png" alt="No Image">
+                    }
+
+                    <div class="book-card-body">
+                        <h5 class="book-card-title">@book.BookTitle</h5>
+                        <p class="book-card-text"><strong>Author:</strong> @book.Author</p>
+                        <p class="book-card-text"><strong>Category:</strong> @book.Category?.CategoryDesc</p>
+                        <p class="book-card-text"><strong>Quantity:</strong> @book.QuantityInStore</p>
+                        <p class="book-card-price">@book.Price JD</p>
+
+                        <!-- ⭐ Star Rating INSIDE the card -->
+                        <div class="star-rating" data-bookid="@book.BookId" data-current="0">
+                            <span class="star" data-value="1">&#9733;</span>
+                            <span class="star" data-value="2">&#9733;</span>
+                            <span class="star" data-value="3">&#9733;</span>
+                            <span class="star" data-value="4">&#9733;</span>
+                            <span class="star" data-value="5">&#9733;</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        }
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const categoryFilter = document.getElementById("categoryFilter");
+        const books = document.querySelectorAll("#booksGrid .book-card");
+
+        // Filtering logic
+        function filterBooks() {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedCategory = categoryFilter.value;
+
+            books.forEach(book => {
+                const title = book.dataset.title || "";
+                const author = book.dataset.author || "";
+                const subject = book.dataset.subject || "";
+                const category = book.dataset.category || "";
+
+                const matchesSearch =
+                    title.includes(searchTerm) ||
+                    author.includes(searchTerm) ||
+                    subject.includes(searchTerm);
+
+                const matchesCategory =
+                    selectedCategory === "" || category === selectedCategory;
+
+                book.parentElement.style.display = (matchesSearch && matchesCategory) ? "" : "none";
+            });
+        }
+
+        searchInput.addEventListener("input", filterBooks);
+        categoryFilter.addEventListener("change", filterBooks);
+
+        // ⭐ Rating system with reset
+        document.querySelectorAll(".star-rating").forEach(starContainer => {
+            const stars = starContainer.querySelectorAll(".star");
+            let currentRating = 0;
+
+            // Preview on hover
+            stars.forEach(star => {
+                star.addEventListener("mouseenter", function () {
+                    const rating = parseInt(this.getAttribute("data-value"));
+                    stars.forEach(s => {
+                        const value = parseInt(s.getAttribute("data-value"));
+                        s.classList.toggle("hover", value <= rating);
+                    });
+                });
+
+                // Clear preview when leaving
+                starContainer.addEventListener("mouseleave", function () {
+                    stars.forEach(s => s.classList.remove("hover"));
+                });
+
+                // Click to set or remove rating
+                star.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    const rating = parseInt(this.getAttribute("data-value"));
+
+                    if (rating === currentRating) {
+                        // clicked same star again -> reset
+                        currentRating = 0;
+                        stars.forEach(s => s.classList.remove("selected"));
+                        console.log("Removed rating for book " + starContainer.dataset.bookid);
+                    } else {
+                        // set new rating
+                        currentRating = rating;
+                        stars.forEach(s => {
+                            const value = parseInt(s.getAttribute("data-value"));
+                            s.classList.toggle("selected", value <= rating);
+                        });
+                        console.log("Rated book " + starContainer.dataset.bookid + " with " + rating + " stars.");
+                    }
+
+                    // TODO: send currentRating to backend (AJAX)
+                });
+            });
+        });
+    });
+</script>
+
+<style>
+    .book-card-link {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .book-card {
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        padding-bottom: 10px;
+    }
+
+    .book-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    /* ⭐ Star rating inside the card */
+    .star-rating {
+        margin-top: 8px;
+        display: inline-flex;
+        flex-direction: row;
+        gap: 4px;
+    }
+
+    .star {
+        font-size: 1.5rem;
+        color: #ccc;
+        cursor: pointer;
+        transition: color 0.2s ease;
+    }
+
+    /* Hover effect */
+    .star.hover {
+        color: gold;
+    }
+
+    /* Selected (locked rating) */
+    .star.selected {
+        color: gold;
+    }
+</style>

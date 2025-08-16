@@ -1,0 +1,138 @@
+﻿@using System.Security.Claims
+@using Microsoft.EntityFrameworkCore
+@using OBSS.Data
+@inject OBSSContext _context
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - OBSS</title>
+    <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    @RenderSection("Head", required: false)
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+
+    <!-- Site Header -->
+    <header class="site-header">
+        <nav class="navbar">
+            <div class="container navbar-container">
+                <!-- Logo -->
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-logo" aria-label="OBSS Home">
+                    <img src="~/OBSS-LOGO.png" alt="OBSS Logo" />
+                </a>
+
+                <!-- Navigation Links -->
+                <ul class="nav-links">
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <!-- My Cart link -->
+                        <li><a asp-controller="Carts" asp-action="MyCart" class="nav-link">My Cart</a></li>
+
+                        <!-- Everyone (authenticated) -->
+                        <li><a asp-controller="Books" asp-action="Index" class="nav-link">Books</a></li>
+                        <li><a asp-controller="Categories" asp-action="Index" class="nav-link">Categories</a></li>
+                        <li><a asp-controller="Rates" asp-action="Index" class="nav-link">Rates</a></li>
+
+                        <li><a asp-controller="Carts" asp-action="Index" class="nav-link">Carts</a></li>
+                        <li><a asp-controller="CartDetails" asp-action="Index" class="nav-link">Cart Details</a></li>
+                        <li><a asp-controller="Sales" asp-action="Index" class="nav-link">Sales</a></li>
+                        <li><a asp-controller="SalesDetails" asp-action="Index" class="nav-link">Sales Details</a></li>
+
+                        <!-- Admin-only -->
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li><a asp-controller="Users" asp-action="Index" class="nav-link">Users</a></li>
+                            <li><a asp-controller="UserTypes" asp-action="Index" class="nav-link">User Types</a></li>
+                        }
+                    }
+                </ul>
+
+
+                <!-- User Info and Theme Toggle -->
+                <div class="auth-info">
+                    <button id="themeToggle" class="btn-theme" aria-label="Toggle theme">
+                        <span id="themeIcon">🌓</span>
+                    </button>
+
+                    @if (User.Identity?.IsAuthenticated ?? false)
+                    {
+                        <!-- Greeting links to MyProfile -->
+                        <a asp-controller="Account" asp-action="MyProfile" class="user-greeting">
+                            @User.Identity!.Name
+                        </a>
+
+                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-secondary">Logout</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
+                    }
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main id="main-content" class="page-container">
+        @RenderBody()
+    </main>
+
+    <!-- Site Footer -->
+    <footer class="site-footer">
+        <div class="container footer-content">
+            <nav class="footer-nav">
+                <a asp-controller="Home" asp-action="Index" class="footer-link">Home</a>
+                <a asp-controller="Home" asp-action="Privacy" class="footer-link">Privacy</a>
+            </nav>
+            <p class="copyright">&copy; @DateTime.Now.Year OBSS</p>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const rootEl = document.documentElement;
+            const bodyEl = document.body;
+            const toggleBtn = document.getElementById('themeToggle');
+            const themeIcon = document.getElementById('themeIcon');
+
+            function initTheme() {
+                const savedTheme = localStorage.getItem('theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const defaultTheme = systemPrefersDark ? 'dark' : 'light';
+                const theme = savedTheme || defaultTheme;
+                setTheme(theme);
+            }
+
+            function setTheme(theme) {
+                rootEl.classList.remove('light-theme', 'dark-theme');
+                bodyEl.classList.remove('light-theme', 'dark-theme');
+                rootEl.classList.add(theme + '-theme');
+                bodyEl.classList.add(theme + '-theme');
+                if (themeIcon) {
+                    themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+                }
+                localStorage.setItem('theme', theme);
+            }
+
+            toggleBtn?.addEventListener('click', function () {
+                const currentTheme = rootEl.classList.contains('dark-theme') ? 'dark' : 'light';
+                setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+            });
+
+            initTheme();
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

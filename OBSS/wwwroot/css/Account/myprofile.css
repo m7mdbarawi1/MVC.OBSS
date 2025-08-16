@@ -1,0 +1,91 @@
+﻿.page-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: var(--surface);
+    padding: var(--space-xl);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+    transition: var(--transition);
+}
+
+    .page-container h2 {
+        text-align: center;
+        margin-bottom: var(--space-lg);
+        font-weight: 700;
+        color: var(--text);
+    }
+
+.success-message {
+    background-color: var(--g-100);
+    border: 1px solid var(--g-400);
+    padding: var(--space-sm);
+    border-radius: var(--radius-sm);
+    color: var(--g-700);
+    margin-bottom: var(--space-md);
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: var(--space-md);
+}
+
+    .form-group label {
+        font-weight: 600;
+        margin-bottom: var(--space-2xs);
+        display: block;
+        color: var(--text);
+    }
+
+.form-control {
+    width: 100%;
+    padding: var(--space-sm) var(--space-md);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+}
+
+    .form-control:focus {
+        border-color: var(--g-500);
+        box-shadow: 0 0 0 3px rgba(76,175,80,0.25);
+        outline: none;
+    }
+
+.form-actions {
+    display: flex;
+    gap: var(--space-md);
+}
+
+.btn {
+    padding: var(--space-sm) var(--space-lg);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--g-500), var(--g-700));
+    color: var(--white);
+}
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--g-400), var(--g-600));
+    }
+
+.btn-danger {
+    background: #dc2626;
+    color: var(--white);
+}
+
+    .btn-danger:hover {
+        background: #b91c1c;
+    }
+
+.dark-theme .success-message {
+    background-color: var(--g-800);
+    border-color: var(--g-600);
+    color: var(--g-300);
+}

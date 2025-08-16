@@ -1,0 +1,90 @@
+﻿/* ==========================================
+   REGISTER FORM - Matches Global Theme
+========================================== */
+
+.register-form {
+    background: var(--surface);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    max-width: 500px;
+    margin: 0 auto;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+}
+
+    .register-form:hover {
+        box-shadow: var(--shadow-md);
+    }
+
+/* Title */
+h2 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+/* Labels */
+.register-form .form-label {
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* Inputs */
+.register-form .form-control {
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-md);
+    transition: var(--transition);
+}
+
+    .register-form .form-control:focus {
+        border-color: var(--g-500);
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.25);
+        outline: none;
+    }
+
+/* Validation errors */
+.text-danger {
+    font-size: 0.875rem;
+}
+
+/* Submit button */
+.register-form .btn-primary {
+    background: linear-gradient(135deg, var(--g-500), var(--g-700));
+    border-color: var(--g-600);
+    color: var(--white);
+    font-weight: 600;
+    border-radius: var(--radius-sm);
+    padding: var(--space-sm) var(--space-lg);
+    transition: var(--transition);
+}
+
+    .register-form .btn-primary:hover {
+        background: linear-gradient(135deg, var(--g-400), var(--g-600));
+        transform: translateY(-1px);
+    }
+
+/* Dark theme support */
+.dark-theme .register-form {
+    background: var(--surface);
+    border-color: var(--border);
+}
+
+    .dark-theme .register-form .form-label {
+        color: var(--text);
+    }
+
+    .dark-theme .register-form .form-control {
+        background: var(--surface);
+        color: var(--text);
+        border-color: var(--border);
+    }
+
+/* Responsive tweaks */
+@media (max-width: 576px) {
+    .register-form {
+        padding: var(--space-md);
+    }
+}

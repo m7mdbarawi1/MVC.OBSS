@@ -1,0 +1,70 @@
+﻿@model IEnumerable<OBSS.Models.User>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Users</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
+</p>
+
+<!-- Search box -->
+<div class="mb-3">
+    <input type="text" id="searchInput" class="form-control" placeholder="Search users...">
+</div>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.UserName)</th>
+            <th>@Html.DisplayNameFor(model => model.Password)</th>
+            <th>@Html.DisplayNameFor(model => model.FirstName)</th>
+            <th>@Html.DisplayNameFor(model => model.LastName)</th>
+            <th>@Html.DisplayNameFor(model => model.Birthdate)</th>
+            <th>@Html.DisplayNameFor(model => model.ContactNumber)</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
+            <th>@Html.DisplayNameFor(model => model.Gender)</th>
+            <th>@Html.DisplayNameFor(model => model.UserTypeNavigation)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody id="usersTable">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.UserName</td>
+                <td>@item.Password</td>
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td>@item.Birthdate.ToShortDateString()</td>
+                <td>@item.ContactNumber</td>
+                <td>@item.Email</td>
+                <td>@item.Gender?.GenderDesc</td>
+                <td>@item.UserTypeNavigation?.TypeDesc</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.UserId" class="btn btn-sm btn-warning">Edit</a>
+                    <a asp-action="Details" asp-route-id="@item.UserId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Delete" asp-route-id="@item.UserId" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const searchInput = document.getElementById("searchInput");
+        const tableRows = document.querySelectorAll("#usersTable tr");
+
+        searchInput.addEventListener("input", function () {
+            const searchTerm = searchInput.value.toLowerCase();
+
+            tableRows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                row.style.display = rowText.includes(searchTerm) ? "" : "none";
+            });
+        });
+    });
+</script>
