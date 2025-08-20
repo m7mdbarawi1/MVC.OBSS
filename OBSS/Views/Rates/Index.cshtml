@@ -1,47 +1,46 @@
 ﻿@model IEnumerable<OBSS.Models.Rate>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Rates";
 }
 
-<h1>Index</h1>
+<h1 class="mb-4">Rates</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
-<table class="table">
-    <thead>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Rate1)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Book)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User)
-            </th>
-            <th></th>
+            <th>Rating</th>
+            <th>Book</th>
+            <th>User</th>
+            <th style="width: 180px;">Actions</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Rate1)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Book.BookId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.UserId)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
-}
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Rate1</td>
+                    <td>@item.Book?.BookTitle</td>
+                    <td>@item.User?.UserName</td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { bookId = item.BookId, userId = item.UserId }, new { @class = "btn btn-sm btn-warning me-1" })
+                        @Html.ActionLink("Details", "Details", new { bookId = item.BookId, userId = item.UserId }, new { @class = "btn btn-sm btn-info me-1" })
+                        @Html.ActionLink("Delete", "Delete", new { bookId = item.BookId, userId = item.UserId }, new { @class = "btn btn-sm btn-danger" })
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="4" class="text-center text-muted">No ratings found.</td>
+            </tr>
+        }
     </tbody>
 </table>

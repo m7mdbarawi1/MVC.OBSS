@@ -21,6 +21,9 @@ namespace OBSS.Controllers
         {
             var books = await _context.Books
                 .Include(b => b.Category)
+                .Include(b => b.Rates) // include ratings
+                .Where(b => b.QuantityInStore > 0)
+                .OrderByDescending(b => b.Rates.Any() ? b.Rates.Average(r => r.Rate1) : 0) // use Rate1
                 .ToListAsync();
 
             return View(books);

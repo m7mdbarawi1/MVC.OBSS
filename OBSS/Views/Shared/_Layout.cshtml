@@ -29,24 +29,30 @@
                 <ul class="nav-links">
                     @if (User.Identity?.IsAuthenticated ?? false)
                     {
-                        <!-- My Cart link -->
-                        <li><a asp-controller="Carts" asp-action="MyCart" class="nav-link">My Cart</a></li>
 
-                        <!-- Everyone (authenticated) -->
-                        <li><a asp-controller="Books" asp-action="Index" class="nav-link">Books</a></li>
-                        <li><a asp-controller="Categories" asp-action="Index" class="nav-link">Categories</a></li>
-                        <li><a asp-controller="Rates" asp-action="Index" class="nav-link">Rates</a></li>
-
-                        <li><a asp-controller="Carts" asp-action="Index" class="nav-link">Carts</a></li>
-                        <li><a asp-controller="CartDetails" asp-action="Index" class="nav-link">Cart Details</a></li>
-                        <li><a asp-controller="Sales" asp-action="Index" class="nav-link">Sales</a></li>
-                        <li><a asp-controller="SalesDetails" asp-action="Index" class="nav-link">Sales Details</a></li>
 
                         <!-- Admin-only -->
                         @if (User.IsInRole("Admin"))
                         {
+                            <!-- Everyone (authenticated) -->
+                            <li><a asp-controller="Books" asp-action="Index" class="nav-link">Books</a></li>
+                            <li><a asp-controller="Categories" asp-action="Index" class="nav-link">Categories</a></li>
+                            <li><a asp-controller="Rates" asp-action="Index" class="nav-link">Rates</a></li>
+
+                            <li><a asp-controller="Carts" asp-action="Index" class="nav-link">Carts</a></li>
+                            <li><a asp-controller="CartDetails" asp-action="Index" class="nav-link">Cart Details</a></li>
+                            <li><a asp-controller="Sales" asp-action="Index" class="nav-link">Sales</a></li>
+                            <li><a asp-controller="SalesDetails" asp-action="Index" class="nav-link">Sales Details</a></li>
+
                             <li><a asp-controller="Users" asp-action="Index" class="nav-link">Users</a></li>
                             <li><a asp-controller="UserTypes" asp-action="Index" class="nav-link">User Types</a></li>
+
+                            <li><a asp-controller="Books" asp-action="RequiredBooks" class="nav-link">Required Books</a></li>
+                        }
+                        else if (User.IsInRole("Customer"))
+                        {
+                            <!-- My Cart link -->
+                            <li><a asp-controller="Carts" asp-action="MyCart" class="nav-link">My Cart</a></li>
                         }
                     }
                 </ul>
@@ -62,7 +68,7 @@
                     {
                         <!-- Greeting links to MyProfile -->
                         <a asp-controller="Account" asp-action="MyProfile" class="user-greeting">
-                            @User.Identity!.Name
+                            @User.Identity!.Name (@User.FindFirst(ClaimTypes.Role)?.Value)
                         </a>
 
                         <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
@@ -74,6 +80,7 @@
                     {
                         <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
                     }
+
                 </div>
             </div>
         </nav>

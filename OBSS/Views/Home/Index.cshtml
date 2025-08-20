@@ -1,7 +1,18 @@
 ﻿@model IEnumerable<OBSS.Models.Book>
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Home Page";
+
+    int? currentUserId = null;
+    if (User.Identity?.IsAuthenticated ?? false)
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+        if (userIdClaim != null)
+        {
+            currentUserId = int.Parse(userIdClaim.Value);
+        }
+    }
 }
 
 <link href="~/css/home/index.css" rel="stylesheet" />
@@ -11,10 +22,10 @@
 
     <!-- Search and Filter Controls -->
     <div class="row mb-4">
-        <div class="col-md-6 mb-2">
+        <div class="col-md-3 mb-2">
             <input type="text" id="searchInput" class="form-control" placeholder="Search by title, author, or subject...">
         </div>
-        <div class="col-md-6 mb-2">
+        <div class="col-md-3 mb-2">
             <select id="categoryFilter" class="form-control">
                 <option value="">All Categories</option>
                 @foreach (var category in Model.Select(b => b.Category?.CategoryDesc).Distinct())
@@ -26,66 +37,117 @@
                 }
             </select>
         </div>
+        <div class="col-md-2 mb-2">
+            <input type="number" id="minPrice" class="form-control" placeholder="Min Price">
+        </div>
+        <div class="col-md-2 mb-2">
+            <input type="number" id="maxPrice" class="form-control" placeholder="Max Price">
+        </div>
+        <div class="col-md-2 mb-2">
+            <select id="ratingFilter" class="form-control">
+                <option value="">All Ratings</option>
+                <option value="1">⭐ 1+</option>
+                <option value="2">⭐ 2+</option>
+                <option value="3">⭐ 3+</option>
+                <option value="4">⭐ 4+</option>
+                <option value="5">⭐ 5</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-12 text-end">
+            <span id="resultCount" class="fw-bold"></span>
+        </div>
     </div>
 
     <!-- Books Grid -->
     <div class="books-grid" id="booksGrid">
         @foreach (var book in Model)
         {
-            <a href="@Url.Action("Details", "Books", new { id = book.BookId })" class="book-card-link">
-                <div class="book-card"
-                     data-title="@book.BookTitle.ToLower()"
-                     data-author="@book.Author.ToLower()"
-                     data-subject="@book.Subject?.ToLower()"
-                     data-category="@book.Category?.CategoryDesc">
+            var userRating = book.Rates.FirstOrDefault(r => r.UserId == currentUserId)?.Rate1 ?? 0;
+            var avgRating = book.Rates.Any() ? book.Rates.Average(r => r.Rate1) : 0;
 
-                    @if (!string.IsNullOrEmpty(book.CoverImageUrl))
-                    {
-                        <img src="@book.CoverImageUrl" alt="@book.BookTitle">
-                    }
-                    else
-                    {
-                        <img src="~/images/no-image.png" alt="No Image">
-                    }
+            <div class="book-card-wrapper">
+                <a href="@Url.Action("Details", "Books", new { id = book.BookId })" class="book-card-link">
+                    <div class="book-card"
+                         data-title="@book.BookTitle.ToLower()"
+                         data-author="@book.Author.ToLower()"
+                         data-subject="@book.Subject?.ToLower()"
+                         data-category="@book.Category?.CategoryDesc"
+                         data-price="@book.Price"
+                         data-rating="@avgRating">
 
-                    <div class="book-card-body">
-                        <h5 class="book-card-title">@book.BookTitle</h5>
-                        <p class="book-card-text"><strong>Author:</strong> @book.Author</p>
-                        <p class="book-card-text"><strong>Category:</strong> @book.Category?.CategoryDesc</p>
-                        <p class="book-card-text"><strong>Quantity:</strong> @book.QuantityInStore</p>
-                        <p class="book-card-price">@book.Price JD</p>
+                        @if (!string.IsNullOrEmpty(book.CoverImageUrl))
+                        {
+                            <img src="@book.CoverImageUrl" alt="@book.BookTitle">
+                        }
+                        else
+                        {
+                            <img src="~/images/no-image.png" alt="No Image">
+                        }
 
-                        <!-- ⭐ Star Rating INSIDE the card -->
-                        <div class="star-rating" data-bookid="@book.BookId" data-current="0">
-                            <span class="star" data-value="1">&#9733;</span>
-                            <span class="star" data-value="2">&#9733;</span>
-                            <span class="star" data-value="3">&#9733;</span>
-                            <span class="star" data-value="4">&#9733;</span>
-                            <span class="star" data-value="5">&#9733;</span>
+                        <div class="book-card-body">
+                            <h5 class="book-card-title">@book.BookTitle</h5>
+                            <p class="book-card-text"><strong>Author:</strong> @book.Author</p>
+                            <p class="book-card-text"><strong>Category:</strong> @book.Category?.CategoryDesc</p>
+                            <p class="book-card-text"><strong>Quantity:</strong> @book.QuantityInStore</p>
+                            <p class="book-card-price">@book.Price JD</p>
+
+                            <!-- ⭐ Star Rating (User specific) -->
+                            <div class="star-rating"
+                                 data-bookid="@book.BookId"
+                                 data-current="@userRating">
+                                <span class="star" data-value="1">&#9733;</span>
+                                <span class="star" data-value="2">&#9733;</span>
+                                <span class="star" data-value="3">&#9733;</span>
+                                <span class="star" data-value="4">&#9733;</span>
+                                <span class="star" data-value="5">&#9733;</span>
+                            </div>
+
+                            <!-- 📊 Average Rating -->
+                            <div class="avg-rating">
+                                Average: @avgRating.ToString("0.0") / 5
+                            </div>
                         </div>
                     </div>
-                </div>
-            </a>
+                </a>
+            </div>
         }
     </div>
 </div>
+
+<!-- Hidden current user id -->
+<input type="hidden" id="currentUserId" value="@(currentUserId ?? 0)" />
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const searchInput = document.getElementById("searchInput");
         const categoryFilter = document.getElementById("categoryFilter");
+        const minPriceInput = document.getElementById("minPrice");
+        const maxPriceInput = document.getElementById("maxPrice");
+        const ratingFilter = document.getElementById("ratingFilter");
         const books = document.querySelectorAll("#booksGrid .book-card");
+        const resultCount = document.getElementById("resultCount");
+        const currentUserId = document.getElementById("currentUserId").value;
 
-        // Filtering logic
+        // === Filtering logic ===
         function filterBooks() {
             const searchTerm = searchInput.value.toLowerCase();
             const selectedCategory = categoryFilter.value;
+            const minPrice = parseFloat(minPriceInput.value) || 0;
+            const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
+            const minRating = parseFloat(ratingFilter.value) || 0;
+
+            let visibleCount = 0;
 
             books.forEach(book => {
                 const title = book.dataset.title || "";
                 const author = book.dataset.author || "";
                 const subject = book.dataset.subject || "";
                 const category = book.dataset.category || "";
+                const price = parseFloat(book.dataset.price) || 0;
+                const rating = parseFloat(book.dataset.rating) || 0;
 
                 const matchesSearch =
                     title.includes(searchTerm) ||
@@ -95,19 +157,43 @@
                 const matchesCategory =
                     selectedCategory === "" || category === selectedCategory;
 
-                book.parentElement.style.display = (matchesSearch && matchesCategory) ? "" : "none";
+                const matchesPrice = price >= minPrice && price <= maxPrice;
+
+                const matchesRating = rating >= minRating;
+
+                const isVisible = matchesSearch && matchesCategory && matchesPrice && matchesRating;
+
+                book.parentElement.style.display = isVisible ? "" : "none";
+                if (isVisible) visibleCount++;
             });
+
+            resultCount.textContent = visibleCount + " books found";
         }
 
         searchInput.addEventListener("input", filterBooks);
         categoryFilter.addEventListener("change", filterBooks);
+        minPriceInput.addEventListener("input", filterBooks);
+        maxPriceInput.addEventListener("input", filterBooks);
+        ratingFilter.addEventListener("change", filterBooks);
 
-        // ⭐ Rating system with reset
+        // Run once at load
+        filterBooks();
+
+        // === ⭐ Rating system ===
         document.querySelectorAll(".star-rating").forEach(starContainer => {
             const stars = starContainer.querySelectorAll(".star");
-            let currentRating = 0;
+            let currentRating = parseInt(starContainer.dataset.current) || 0;
+            const bookId = starContainer.dataset.bookid;
 
-            // Preview on hover
+            // Pre-fill selected rating
+            if (currentRating > 0) {
+                stars.forEach(s => {
+                    const value = parseInt(s.getAttribute("data-value"));
+                    s.classList.toggle("selected", value <= currentRating);
+                });
+            }
+
+            // Events
             stars.forEach(star => {
                 star.addEventListener("mouseenter", function () {
                     const rating = parseInt(this.getAttribute("data-value"));
@@ -117,79 +203,48 @@
                     });
                 });
 
-                // Clear preview when leaving
                 starContainer.addEventListener("mouseleave", function () {
                     stars.forEach(s => s.classList.remove("hover"));
                 });
 
-                // Click to set or remove rating
                 star.addEventListener("click", function (e) {
                     e.stopPropagation();
                     e.preventDefault();
 
                     const rating = parseInt(this.getAttribute("data-value"));
 
+                    if (!currentUserId || currentUserId === "0") {
+                        alert("Please log in to rate books.");
+                        return;
+                    }
+
+                    // Toggle rating
                     if (rating === currentRating) {
-                        // clicked same star again -> reset
                         currentRating = 0;
                         stars.forEach(s => s.classList.remove("selected"));
-                        console.log("Removed rating for book " + starContainer.dataset.bookid);
                     } else {
-                        // set new rating
                         currentRating = rating;
                         stars.forEach(s => {
                             const value = parseInt(s.getAttribute("data-value"));
                             s.classList.toggle("selected", value <= rating);
                         });
-                        console.log("Rated book " + starContainer.dataset.bookid + " with " + rating + " stars.");
                     }
 
-                    // TODO: send currentRating to backend (AJAX)
+                    // Send AJAX to backend
+                    fetch('/Rates/RateBook', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: `bookId=${bookId}&rating=${currentRating}`
+                    })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                console.log(`Saved rating ${currentRating} for book ${bookId}`);
+                            }
+                        })
+                        .catch(err => console.error("Error:", err));
                 });
             });
         });
     });
 </script>
-
-<style>
-    .book-card-link {
-        text-decoration: none;
-        color: inherit;
-    }
-
-    .book-card {
-        cursor: pointer;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-        padding-bottom: 10px;
-    }
-
-    .book-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    /* ⭐ Star rating inside the card */
-    .star-rating {
-        margin-top: 8px;
-        display: inline-flex;
-        flex-direction: row;
-        gap: 4px;
-    }
-
-    .star {
-        font-size: 1.5rem;
-        color: #ccc;
-        cursor: pointer;
-        transition: color 0.2s ease;
-    }
-
-    /* Hover effect */
-    .star.hover {
-        color: gold;
-    }
-
-    /* Selected (locked rating) */
-    .star.selected {
-        color: gold;
-    }
-</style>

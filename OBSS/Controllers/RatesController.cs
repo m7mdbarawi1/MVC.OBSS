@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -22,41 +22,33 @@ namespace OBSS.Controllers
         // GET: Rates
         public async Task<IActionResult> Index()
         {
-            var oBSSContext = _context.Rates.Include(r => r.Book).Include(r => r.User);
-            return View(await oBSSContext.ToListAsync());
+            var rates = _context.Rates
+                .Include(r => r.Book)
+                .Include(r => r.User);
+            return View(await rates.ToListAsync());
         }
 
-        // GET: Rates/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: Rates/Details
+        public async Task<IActionResult> Details(int bookId, int userId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var rate = await _context.Rates
                 .Include(r => r.Book)
                 .Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.BookId == id);
-            if (rate == null)
-            {
-                return NotFound();
-            }
+                .FirstOrDefaultAsync(m => m.BookId == bookId && m.UserId == userId);
 
+            if (rate == null) return NotFound();
             return View(rate);
         }
 
         // GET: Rates/Create
         public IActionResult Create()
         {
-            ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookId");
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
+            ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookTitle");
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserName");
             return View();
         }
 
         // POST: Rates/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("BookId,UserId,Rate1")] Rate rate)
@@ -67,40 +59,29 @@ namespace OBSS.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookId", rate.BookId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", rate.UserId);
+            ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookTitle", rate.BookId);
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserName", rate.UserId);
             return View(rate);
         }
 
-        // GET: Rates/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: Rates/Edit
+        public async Task<IActionResult> Edit(int bookId, int userId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            var rate = await _context.Rates
+                .FirstOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId);
+            if (rate == null) return NotFound();
 
-            var rate = await _context.Rates.FindAsync(id);
-            if (rate == null)
-            {
-                return NotFound();
-            }
-            ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookId", rate.BookId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", rate.UserId);
+            ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookTitle", rate.BookId);
+            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserName", rate.UserId);
             return View(rate);
         }
 
-        // POST: Rates/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Rates/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BookId,UserId,Rate1")] Rate rate)
+        public async Task<IActionResult> Edit(int bookId, int userId, [Bind("BookId,UserId,Rate1")] Rate rate)
         {
-            if (id != rate.BookId)
-            {
-                return NotFound();
-            }
+            if (bookId != rate.BookId || userId != rate.UserId) return NotFound();
 
             if (ModelState.IsValid)
             {
@@ -111,60 +92,81 @@ namespace OBSS.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RateExists(rate.BookId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    if (!RateExists(bookId, userId)) return NotFound();
+                    else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookId", rate.BookId);
-            ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId", rate.UserId);
             return View(rate);
         }
 
-        // GET: Rates/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: Rates/Delete
+        public async Task<IActionResult> Delete(int bookId, int userId)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var rate = await _context.Rates
                 .Include(r => r.Book)
                 .Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.BookId == id);
-            if (rate == null)
-            {
-                return NotFound();
-            }
+                .FirstOrDefaultAsync(m => m.BookId == bookId && m.UserId == userId);
+
+            if (rate == null) return NotFound();
 
             return View(rate);
         }
 
-        // POST: Rates/Delete/5
+        // POST: Rates/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int bookId, int userId)
         {
-            var rate = await _context.Rates.FindAsync(id);
+            var rate = await _context.Rates
+                .FirstOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId);
+
             if (rate != null)
             {
                 _context.Rates.Remove(rate);
+                await _context.SaveChangesAsync();
             }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RateExists(int id)
+        [HttpPost]
+        public IActionResult RateBook(int bookId, int rating)
         {
-            return _context.Rates.Any(e => e.BookId == id);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            var existingRate = _context.Rates
+                .FirstOrDefault(r => r.BookId == bookId && r.UserId == userId);
+
+            if (rating == 0)
+            {
+                if (existingRate != null)
+                {
+                    _context.Rates.Remove(existingRate);
+                    _context.SaveChanges();
+                }
+                return Json(new { success = true, removed = true });
+            }
+
+            if (existingRate == null)
+            {
+                var newRate = new Rate { BookId = bookId, UserId = userId, Rate1 = rating };
+                _context.Rates.Add(newRate);
+            }
+            else
+            {
+                existingRate.Rate1 = rating;
+            }
+
+            _context.SaveChanges();
+            return Json(new { success = true, rating });
+        }
+
+
+
+
+        private bool RateExists(int bookId, int userId)
+        {
+            return _context.Rates.Any(e => e.BookId == bookId && e.UserId == userId);
         }
     }
 }

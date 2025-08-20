@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OBSS.Data;
 using OBSS.Models;
+using System.Text;
 
 namespace OBSS.Controllers
 {
@@ -20,7 +21,11 @@ namespace OBSS.Controllers
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            var books = await _context.Books.Include(b => b.Category).ToListAsync();
+            var books = await _context.Books
+                .Include(b => b.Category)
+                .Include(b => b.Rates)   // 👈 This is required so you can calculate average
+                .ToListAsync();
+
             return View(books);
         }
 
@@ -163,6 +168,36 @@ namespace OBSS.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<IActionResult> RequiredBooks()
+        {
+            var requiredBooks = await _context.Books
+                .Include(b => b.Category)
+                .Where(b => b.QuantityInStore == 0)
+                .ToListAsync();
+
+            return View(requiredBooks);
+        }
+
+        public async Task<IActionResult> DownloadRequiredBooksReport()
+        {
+            var requiredBooks = await _context.Books
+                .Include(b => b.Category)
+                .Where(b => b.QuantityInStore == 0)
+                .ToListAsync();
+
+            var sb = new StringBuilder();
+            sb.AppendLine("BookId,Title,Author,Category,Quantity");
+
+            foreach (var book in requiredBooks)
+            {
+                sb.AppendLine($"{book.BookId},\"{book.BookTitle}\",\"{book.Author}\",{book.Category?.CategoryDesc},0");
+            }
+
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "RequiredBooksReport.csv");
+        }
+
 
         private bool BookExists(int id)
         {
