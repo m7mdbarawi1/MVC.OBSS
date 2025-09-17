@@ -160,6 +160,17 @@ namespace OBSS.Controllers
                     .ThenInclude(b => b.Category)
                 .Where(cd => cd.CartId == cart.CartId)
                 .ToListAsync();
+            var expiredItems = cartDetails
+                .Where(cd => cd.AddedDate < DateTime.Now.AddMinutes(-1)) // ✅ expire after 1 minute
+                .ToList();
+            if (expiredItems.Any())
+            {
+                _context.CartDetails.RemoveRange(expiredItems); // like pressing Remove
+                await _context.SaveChangesAsync();
+
+                TempData["Info"] = $"{expiredItems.Count} item(s) were automatically removed because they were older than 1 minute.";
+                cartDetails = cartDetails.Except(expiredItems).ToList();
+            }
 
             return View(cartDetails);
         }
@@ -193,7 +204,8 @@ namespace OBSS.Controllers
                 {
                     CartId = cart.CartId,
                     BookId = bookId,
-                    Quantity = 1
+                    Quantity = 1,
+                    AddedDate = DateTime.Now
                 });
             }
             else
@@ -259,7 +271,6 @@ namespace OBSS.Controllers
             // Process each item
             foreach (var cartItem in cart.CartDetails)
             {
-                // Reduce stock
                 if (cartItem.Book != null)
                 {
                     cartItem.Book.QuantityInStore -= cartItem.Quantity;
@@ -267,7 +278,6 @@ namespace OBSS.Controllers
                         cartItem.Book.QuantityInStore = 0;
                 }
 
-                // Add sale detail
                 _context.SalesDetails.Add(new SalesDetail
                 {
                     SaleId = sale.SaleId,
@@ -284,6 +294,7 @@ namespace OBSS.Controllers
             TempData["Success"] = "Purchase completed successfully!";
             return RedirectToAction(nameof(MyCart));
         }
+
 
         [HttpPost]
         public async Task<IActionResult> UpdateQuantity(int bookId, int quantity)

@@ -12,6 +12,8 @@ public partial class CartDetail
 
     public int Quantity { get; set; }
 
+    public DateTime AddedDate { get; set; }
+
     [ValidateNever]
     public virtual Book Book { get; set; } = null!;
 

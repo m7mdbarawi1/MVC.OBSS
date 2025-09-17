@@ -6,9 +6,9 @@ namespace OBSS.Models;
 
 public partial class SalesDetail
 {
-    public int SaleId { get; set; }
-
     public int DetailId { get; set; }
+
+    public int SaleId { get; set; }
 
     public int BookId { get; set; }
 

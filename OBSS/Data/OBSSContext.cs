@@ -152,18 +152,18 @@ public partial class OBSSContext : DbContext
 
         modelBuilder.Entity<SalesDetail>(entity =>
         {
-            entity.HasKey(e => new { e.SaleId, e.DetailId });
-
+            entity.HasKey(e => e.DetailId);
+            entity.Property(e => e.DetailId).ValueGeneratedOnAdd();
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
 
             entity.HasOne(d => d.Book).WithMany(p => p.SalesDetails)
-                .HasForeignKey(d => d.BookId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__SalesDeta__BookI__6D0D32F4");
+            .HasForeignKey(d => d.BookId)
+            .OnDelete(DeleteBehavior.ClientSetNull)
+            .HasConstraintName("FK__SalesDeta__BookI__6D0D32F4");
 
             entity.HasOne(d => d.Sale).WithMany(p => p.SalesDetails)
-                .HasForeignKey(d => d.SaleId)
-                .HasConstraintName("FK__SalesDeta__SaleI__6C190EBB");
+            .HasForeignKey(d => d.SaleId)
+            .HasConstraintName("FK__SalesDeta__SaleI__6C190EBB");
         });
 
         modelBuilder.Entity<User>(entity =>

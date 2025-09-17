@@ -3,6 +3,10 @@
     ViewData["Title"] = "My Cart";
     decimal totalPrice = Model.Sum(cd => cd.Book.Price * cd.Quantity);
 }
+@if (TempData["Info"] != null)
+{
+    <div class="alert alert-info">@TempData["Info"]</div>
+}
 
 <h1>My Cart</h1>
 
