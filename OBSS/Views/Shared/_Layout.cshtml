@@ -11,6 +11,7 @@
     <title>@ViewData["Title"] - OBSS</title>
     <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
     @RenderSection("Head", required: false)
 </head>
 <body class="d-flex flex-column min-vh-100">
@@ -40,20 +41,20 @@
                         {
                             @if (User.IsInRole("Admin"))
                             {
-                                <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">Books</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Categories" asp-action="Index">Categories</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Rates" asp-action="Index">Rates</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="Index">Carts</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="CartDetails" asp-action="Index">Cart Details</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Sales" asp-action="Index">Sales</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="SalesDetails" asp-action="Index">Sales Details</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Users</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="UserTypes" asp-action="Index">User Types</a></li>
-                                <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="RequiredBooks">Required Books</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">Books</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="Categories" asp-action="Index">Categories</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="Rates" asp-action="Index">Rates</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="Index">Carts</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="CartDetails" asp-action="Index">Cart Details</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="Sales" asp-action="Index">Sales</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="SalesDetails" asp-action="Index">Sales Details</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Users</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="UserTypes" asp-action="Index">User Types</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="RequiredBooks">Required Books</a></li>
                             }
                             else if (User.IsInRole("Customer"))
                             {
-                                <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="MyCart">My Cart</a></li>
+                                        <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="MyCart">My Cart</a></li>
                             }
                         }
                     </ul>
@@ -65,34 +66,48 @@
                             <span id="themeIcon">🌓</span>
                         </button>
 
+                        <!-- Language dropdown -->
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="languageDropdown"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                Language
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
+                                <li><a class="dropdown-item lang-option" data-lang="en" href="#">English</a></li>
+                                <li><a class="dropdown-item lang-option" data-lang="ar" href="#">العربية</a></li>
+                                <li><a class="dropdown-item lang-option" data-lang="fr" href="#">Français</a></li>
+                                <li><a class="dropdown-item lang-option" data-lang="es" href="#">Español</a></li>
+                            </ul>
+                        </div>
+
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                            <!-- User Dropdown -->
-                            <div class="dropdown">
-                                <a class="btn btn-outline-light btn-sm dropdown-toggle w-100 text-truncate"
-                                   href="#" id="userDropdown" role="button"
-                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                <!-- User Dropdown -->
+                                <div class="dropdown">
+                                    <a class="btn btn-outline-light btn-sm dropdown-toggle w-100 text-truncate"
+                                       href="#" id="userDropdown" role="button"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
                                     @User.Identity!.Name
-                                    <small class="d-none d-md-inline">(@User.FindFirst(ClaimTypes.Role)?.Value)</small>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-responsive"
-                                    aria-labelledby="userDropdown">
-                                    <li>
-                                        <a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">My Profile</a>
-                                    </li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
+                                        <small class="d-none d-md-inline">(@User.FindFirst(ClaimTypes.Role)?.Value)</small>
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-responsive"
+                                        aria-labelledby="userDropdown">
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">My Profile</a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li>
+                                            <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
                                             @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-danger w-100">Logout</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </div>
+                                                <button type="submit" class="btn btn-sm btn-danger w-100">Logout</button>
+                                            </form>
+                                        </li>
+                                    </ul>
+                                </div>
                         }
                         else
                         {
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-accent btn-sm">Login</a>
+                                <a asp-controller="Account" asp-action="Login" class="btn btn-accent btn-sm">Login</a>
                         }
                     </div>
                 </div>
@@ -110,13 +125,64 @@
     </main>
 
     <!-- Footer -->
-    <footer class="footer-custom py-3 mt-auto">
-        <div class="container-fluid d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start">
-            <nav class="mb-2 mb-md-0">
-                <a asp-controller="Home" asp-action="Index" class="footer-link me-3">Home</a>
-                <a asp-controller="Home" asp-action="Privacy" class="footer-link">Privacy</a>
-            </nav>
-            <p class="mb-0">&copy; @DateTime.Now.Year OBSS</p>
+    <footer class="footer-custom mt-auto pt-5 pb-3">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Get in Touch -->
+                <div class="col-md-4">
+                    <h5 class="fw-bold">Get in Touch</h5>
+                    <form class="d-flex flex-column gap-2 mt-3">
+                        <input type="email" class="form-control" placeholder="Your email" required />
+                        <button type="submit" class="btn btn-accent btn-sm">Send</button>
+                    </form>
+                    <p class="small mt-2">Subscribe to our Newsletter.</p>
+                </div>
+
+                <!-- Our Platforms -->
+                <div class="col-md-2">
+                    <h6 class="fw-bold">Our Platforms</h6>
+                    <ul class="list-unstyled mt-3">
+                        <li>Bank-BI®</li>
+                        <li>Bank-BPM®</li>
+                        <li>Bank-CEP®</li>
+                    </ul>
+                </div>
+
+                <!-- Who We Are -->
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Who We Are</h6>
+                    <ul class="list-unstyled mt-3">
+                        <li><a href="#" class="footer-link">About Us</a></li>
+                        <li><a href="#" class="footer-link">News</a></li>
+                        <li><a href="#" class="footer-link">Careers</a></li>
+                        <li><a href="#" class="footer-link">Offices</a></li>
+                    </ul>
+                </div>
+
+                <!-- Offices -->
+                <div class="col-md-3">
+                    <h6 class="fw-bold">Offices</h6>
+                    <p class="small mt-3 mb-1">Jordan</p>
+                    <p class="small mb-2">Tel: +96265805030<br />Wasfi Al Tal St, Amman</p>
+
+                    <p class="small mb-1">Kenya</p>
+                    <p class="small mb-0">Tel: +254202023200<br />TRV Office Suite, Muthithi Road, Westlands</p>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <hr class="section-divider my-4" />
+
+            <!-- Bottom -->
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center text-center">
+                <p class="mb-2 mb-md-0 small">
+                    © 2025 piotech. All rights reserved
+                </p>
+                <div>
+                    <a href="#" class="footer-link me-3">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                </div>
+            </div>
         </div>
     </footer>
 
@@ -139,7 +205,7 @@
     </script>
 
     <script>
-        // Dark/Light mode toggle
+        // ✅ Dark/Light mode toggle
         document.addEventListener('DOMContentLoaded', function () {
             const rootEl = document.documentElement;
             const bodyEl = document.body;
@@ -171,6 +237,39 @@
             });
 
             initTheme();
+        });
+    </script>
+
+    <script>
+        // ✅ Language dropdown
+        document.addEventListener('DOMContentLoaded', function () {
+            const rootEl = document.documentElement;
+            const langOptions = document.querySelectorAll('.lang-option');
+
+            function setLanguage(lang) {
+                rootEl.setAttribute('lang', lang);
+                localStorage.setItem('lang', lang);
+
+                // RTL/LTR handling
+                if (lang === 'ar') {
+                    rootEl.setAttribute('dir', 'rtl');
+                } else {
+                    rootEl.setAttribute('dir', 'ltr');
+                }
+            }
+
+            // Initialize saved language
+            const savedLang = localStorage.getItem('lang') || 'en';
+            setLanguage(savedLang);
+
+            // Event listeners
+            langOptions.forEach(option => {
+                option.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const selectedLang = option.getAttribute('data-lang');
+                    setLanguage(selectedLang);
+                });
+            });
         });
     </script>
 
