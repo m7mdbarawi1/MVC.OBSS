@@ -132,6 +132,11 @@ namespace OBSS.Controllers
         [HttpPost]
         public IActionResult RateBook(int bookId, int rating)
         {
+            if (!(User.Identity?.IsAuthenticated ?? false))
+            {
+                return Json(new { success = false, message = "User not authenticated" });
+            }
+
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
             var existingRate = _context.Rates
@@ -144,24 +149,30 @@ namespace OBSS.Controllers
                     _context.Rates.Remove(existingRate);
                     _context.SaveChanges();
                 }
-                return Json(new { success = true, removed = true });
-            }
-
-            if (existingRate == null)
-            {
-                var newRate = new Rate { BookId = bookId, UserId = userId, Rate1 = rating };
-                _context.Rates.Add(newRate);
             }
             else
             {
-                existingRate.Rate1 = rating;
+                if (existingRate == null)
+                {
+                    _context.Rates.Add(new Rate { BookId = bookId, UserId = userId, Rate1 = rating });
+                }
+                else
+                {
+                    existingRate.Rate1 = rating;
+                }
+                _context.SaveChanges();
             }
 
-            _context.SaveChanges();
-            return Json(new { success = true, rating });
+            // ✅ Force client evaluation for Avg
+            var avgRating = _context.Rates
+                .Where(r => r.BookId == bookId)
+                .AsEnumerable()
+                .Select(r => r.Rate1)
+                .DefaultIfEmpty(0)
+                .Average();
+
+            return Json(new { success = true, rating, avgRating = Math.Round(avgRating, 1) });
         }
-
-
 
 
         private bool RateExists(int bookId, int userId)

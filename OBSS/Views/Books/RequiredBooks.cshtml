@@ -4,35 +4,69 @@
     ViewData["Title"] = "Required Books";
 }
 
-<h1>Required Books (Out of Stock)</h1>
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <h1 class="page-title mb-3 mb-md-0">@ViewData["Title"] (Out of Stock)</h1>
+            <a asp-action="DownloadRequiredBooksReport" class="btn btn-primary">
+                <i class="bi bi-download"></i> Download Report
+            </a>
+        </div>
+    </div>
 
-<div class="mb-3">
-    <a asp-action="DownloadRequiredBooksReport" class="btn btn-success"> Download Report </a>
+    <!-- Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Category</th>
+                                    <th>Quantity</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="requiredBooksTable">
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var book in Model)
+                                    {
+                                        <tr class="table-row-hover">
+                                            <td>@book.BookTitle</td>
+                                            <td>@book.Author</td>
+                                            <td>@book.Category?.CategoryDesc</td>
+                                            <td>0 (Out of Stock)</td> <!-- ✅ plain text only -->
+                                            <td class="text-center">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                    <a asp-action="Edit" asp-route-id="@book.BookId" class="btn btn-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i> Update
+                                                    </a>
+                                                    <a asp-action="Details" asp-route-id="@book.BookId" class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-3">
+                                            No required books (all in stock).
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Title</th>
-            <th>Author</th>
-            <th>Category</th>
-            <th>Quantity</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var book in Model)
-        {
-            <tr>
-                <td>@book.BookTitle</td>
-                <td>@book.Author</td>
-                <td>@book.Category?.CategoryDesc</td>
-                <td><span class="badge bg-danger">0 (Out of Stock)</span></td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@book.BookId" class="btn btn-warning btn-sm">Update Quantity</a>
-                    <a asp-action="Details" asp-route-id="@book.BookId" class="btn btn-info btn-sm">Details</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>

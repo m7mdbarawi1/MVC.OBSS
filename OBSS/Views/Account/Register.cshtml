@@ -4,74 +4,95 @@
     ViewData["Title"] = "Register";
 }
 
-<link href="~/css/account/register.css" rel="stylesheet" />
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Create an Account</h2>
-    <form asp-action="Register" method="post" class="register-form shadow-sm p-4 rounded bg-white">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
-
-        <div class="mb-3">
-            <label asp-for="UserType" class="form-label"></label>
-            <select asp-for="UserType" class="form-control" asp-items="@(new SelectList(ViewBag.UserTypes, "TypeId", "TypeDesc"))"></select>
-            <span asp-validation-for="UserType" class="text-danger"></span>
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title">Create an Account</h1>
         </div>
+    </div>
 
-        <div class="mb-3">
-            <label asp-for="UserName" class="form-label"></label>
-            <input asp-for="UserName" class="form-control" />
-            <span asp-validation-for="UserName" class="text-danger"></span>
+    <!-- Centered Register Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="UserType" class="form-label"></label>
+                            <select asp-for="UserType" class="form-select"
+                                    asp-items="@(new SelectList(ViewBag.UserTypes, "TypeId", "TypeDesc"))"></select>
+                            <span asp-validation-for="UserType" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="UserName" class="form-label"></label>
+                            <input asp-for="UserName" class="form-control" />
+                            <span asp-validation-for="UserName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" type="password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Birthdate" class="form-label"></label>
+                            <input asp-for="Birthdate" type="date" class="form-control" />
+                            <span asp-validation-for="Birthdate" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="GenderId" class="form-label"></label>
+                            <select asp-for="GenderId" class="form-select"
+                                    asp-items="@(new SelectList(ViewBag.Genders, "GenderId", "GenderDesc"))"></select>
+                            <span asp-validation-for="GenderId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="ContactNumber" class="form-label"></label>
+                            <input asp-for="ContactNumber" class="form-control" />
+                            <span asp-validation-for="ContactNumber" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" type="email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+
+                        <!-- Register Button -->
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-person-plus"></i> Register
+                            </button>
+                        </div>
+
+                        <!-- Login Link -->
+                        <p class="text-center mt-3 mb-0">
+                            Already have an account?
+                            <a asp-controller="Account" asp-action="Login">Login here</a>.
+                        </p>
+                    </form>
+                </div>
+            </div>
         </div>
-
-        <div class="mb-3">
-            <label asp-for="Password" class="form-label"></label>
-            <input asp-for="Password" class="form-control" type="password" />
-            <span asp-validation-for="Password" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="FirstName" class="form-label"></label>
-            <input asp-for="FirstName" class="form-control" />
-            <span asp-validation-for="FirstName" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="LastName" class="form-label"></label>
-            <input asp-for="LastName" class="form-control" />
-            <span asp-validation-for="LastName" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Birthdate" class="form-label"></label>
-            <input asp-for="Birthdate" class="form-control" type="date" />
-            <span asp-validation-for="Birthdate" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="GenderId" class="form-label"></label>
-            <select asp-for="GenderId" class="form-control" asp-items="@(new SelectList(ViewBag.Genders, "GenderId", "GenderDesc"))"></select>
-            <span asp-validation-for="GenderId" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="ContactNumber" class="form-label"></label>
-            <input asp-for="ContactNumber" class="form-control" />
-            <span asp-validation-for="ContactNumber" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Email" class="form-label"></label>
-            <input asp-for="Email" class="form-control" type="email" />
-            <span asp-validation-for="Email" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="btn btn-primary w-100">Register</button>
-
-        <!-- Login link -->
-        <p class="text-center mt-3">
-            Already have an account?
-            <a asp-controller="Account" asp-action="Login">Login here</a>.
-        </p>
-    </form>
+    </div>
 </div>
 
 @section Scripts {

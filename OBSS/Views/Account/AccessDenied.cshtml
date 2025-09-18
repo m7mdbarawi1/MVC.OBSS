@@ -1,11 +1,53 @@
-﻿@{
-    ViewData["Title"] = "Access Denied";
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
 }
-<link href="~/css/account/accessdenied.css" rel="stylesheet" />
-<main class="access-denied-page">
-    <section class="access-denied-section">
-        <h1 class="access-denied-title">Access Denied</h1>
-        <p class="access-denied-message">You do not have permission to access this page.</p>
-        <a href="/" class="access-denied-link">Return to Homepage</a>
-    </section>
-</main>
+
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title text-danger">
+                <i class="bi bi-exclamation-triangle-fill"></i> Error
+            </h1>
+            <h4 class="text-muted">An error occurred while processing your request.</h4>
+        </div>
+    </div>
+
+    <!-- Error Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm border-danger">
+                <div class="card-body">
+                    @if (Model.ShowRequestId)
+                    {
+                        <p>
+                            <strong>Request ID:</strong>
+                            <code>@Model.RequestId</code>
+                        </p>
+                    }
+
+                    <h5>Development Mode</h5>
+                    <p>
+                        Swapping to <strong>Development</strong> environment will display more detailed
+                        information about the error that occurred.
+                    </p>
+                    <p class="text-danger">
+                        <strong>Important:</strong> The Development environment shouldn't be enabled for
+                        deployed applications. It may expose sensitive information to end users.
+                    </p>
+                    <p>
+                        For local debugging, enable the <strong>Development</strong> environment by setting
+                        the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to
+                        <strong>Development</strong> and restarting the app.
+                    </p>
+                </div>
+                <div class="card-footer text-end">
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

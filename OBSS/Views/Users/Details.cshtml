@@ -1,72 +1,63 @@
 ﻿@model OBSS.Models.User
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "User Details";
 }
 
-<h1>Details</h1>
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title">User Details</h1>
+        </div>
+    </div>
 
-<div>
-    <h4>User</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Birthdate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Birthdate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ContactNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ContactNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Gender)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Gender.GenderId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserTypeNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserTypeNavigation.TypeId)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.UserId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <!-- Centered Details Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0">Details</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.UserName)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.UserName)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Password)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Password)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.FirstName)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.FirstName)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.LastName)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.LastName)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Birthdate)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Birthdate)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.ContactNumber)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.ContactNumber)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Email)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Email)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Gender)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Gender.GenderDesc)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.UserTypeNavigation)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.UserTypeNavigation.TypeDesc)</dd>
+                    </dl>
+                </div>
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model?.UserId" class="btn btn-secondary">
+                        <i class="bi bi-pencil-square"></i> Edit
+                    </a>
+                    <a asp-action="Index" class="btn btn-primary">
+                        <i class="bi bi-arrow-left-circle"></i> Back
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

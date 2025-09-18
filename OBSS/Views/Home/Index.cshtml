@@ -2,7 +2,7 @@
 @using System.Security.Claims
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Available Books";
 
     int? currentUserId = null;
     if (User.Identity?.IsAuthenticated ?? false)
@@ -14,63 +14,66 @@
         }
     }
 }
-
 <link href="~/css/home/index.css" rel="stylesheet" />
 
-<div class="container mt-4">
-    <h1 class="text-center mb-4">Available Books</h1>
-
-    <!-- Search and Filter Controls -->
-    <div class="row mb-4">
-        <div class="col-md-3 mb-2">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search by title, author, or subject...">
-        </div>
-        <div class="col-md-3 mb-2">
-            <select id="categoryFilter" class="form-control">
-                <option value="">All Categories</option>
-                @foreach (var category in Model.Select(b => b.Category?.CategoryDesc).Distinct())
-                {
-                    if (!string.IsNullOrEmpty(category))
-                    {
-                        <option value="@category">@category</option>
-                    }
-                }
-            </select>
-        </div>
-        <div class="col-md-2 mb-2">
-            <input type="number" id="minPrice" class="form-control" placeholder="Min Price">
-        </div>
-        <div class="col-md-2 mb-2">
-            <input type="number" id="maxPrice" class="form-control" placeholder="Max Price">
-        </div>
-        <div class="col-md-2 mb-2">
-            <select id="ratingFilter" class="form-control">
-                <option value="">All Ratings</option>
-                <option value="1">⭐ 1+</option>
-                <option value="2">⭐ 2+</option>
-                <option value="3">⭐ 3+</option>
-                <option value="4">⭐ 4+</option>
-                <option value="5">⭐ 5</option>
-            </select>
-        </div>
+<div class="container page-wrapper mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="page-title mb-0">Available Books</h1>
+        <span id="resultCount" class="fw-bold text-secondary"></span>
     </div>
 
-    <div class="row mb-4">
-        <div class="col-md-12 text-end">
-            <span id="resultCount" class="fw-bold"></span>
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search by title, author, or subject...">
+                </div>
+                <div class="col-md-3">
+                    <select id="categoryFilter" class="form-select">
+                        <option value="">All Categories</option>
+                        @foreach (var category in Model.Select(b => b.Category?.CategoryDesc).Distinct())
+                        {
+                            if (!string.IsNullOrEmpty(category))
+                            {
+                                <option value="@category">@category</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <input type="number" id="minPrice" class="form-control" placeholder="Min Price">
+                </div>
+                <div class="col-md-2">
+                    <input type="number" id="maxPrice" class="form-control" placeholder="Max Price">
+                </div>
+                <div class="col-md-2">
+                    <select id="ratingFilter" class="form-select">
+                        <option value="">All Ratings</option>
+                        <option value="1">⭐ 1+</option>
+                        <option value="2">⭐ 2+</option>
+                        <option value="3">⭐ 3+</option>
+                        <option value="4">⭐ 4+</option>
+                        <option value="5">⭐ 5</option>
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
     <!-- Books Grid -->
-    <div class="books-grid" id="booksGrid">
+    <!-- Books Grid -->
+    <div class="row" id="booksGrid">
         @foreach (var book in Model)
         {
             var userRating = book.Rates.FirstOrDefault(r => r.UserId == currentUserId)?.Rate1 ?? 0;
             var avgRating = book.Rates.Any() ? book.Rates.Average(r => r.Rate1) : 0;
 
-            <div class="book-card-wrapper">
-                <a href="@Url.Action("Details", "Books", new { id = book.BookId })" class="book-card-link">
-                    <div class="book-card"
+            <div class="col-md-3 mb-4 book-card-wrapper">
+                <!-- ✅ changed from col-md-4 to col-md-3 -->
+                <a href="@Url.Action("Details", "Books", new { id = book.BookId })" class="card-link-wrapper">
+                    <div class="card h-100 shadow-sm book-card"
                          data-title="@book.BookTitle.ToLower()"
                          data-author="@book.Author.ToLower()"
                          data-subject="@book.Subject?.ToLower()"
@@ -80,22 +83,22 @@
 
                         @if (!string.IsNullOrEmpty(book.CoverImageUrl))
                         {
-                            <img src="@book.CoverImageUrl" alt="@book.BookTitle">
+                            <img src="@book.CoverImageUrl" class="card-img-top" alt="@book.BookTitle">
                         }
                         else
                         {
-                            <img src="~/images/no-image.png" alt="No Image">
+                            <img src="~/images/no-image.png" class="card-img-top" alt="No Image">
                         }
 
-                        <div class="book-card-body">
-                            <h5 class="book-card-title">@book.BookTitle</h5>
-                            <p class="book-card-text"><strong>Author:</strong> @book.Author</p>
-                            <p class="book-card-text"><strong>Category:</strong> @book.Category?.CategoryDesc</p>
-                            <p class="book-card-text"><strong>Quantity:</strong> @book.QuantityInStore</p>
-                            <p class="book-card-price">@book.Price JD</p>
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">@book.BookTitle</h5>
+                            <p class="card-text"><strong>Author:</strong> @book.Author</p>
+                            <p class="card-text"><strong>Category:</strong> @book.Category?.CategoryDesc</p>
+                            <p class="card-text"><strong>Quantity:</strong> @book.QuantityInStore</p>
+                            <p class="card-text fw-bold text-primary">@book.Price JD</p>
 
-                            <!-- ⭐ Star Rating (User specific) -->
-                            <div class="star-rating"
+                            <!-- ⭐ Star Rating -->
+                            <div class="star-rating mb-2"
                                  data-bookid="@book.BookId"
                                  data-current="@userRating">
                                 <span class="star" data-value="1">&#9733;</span>
@@ -106,7 +109,7 @@
                             </div>
 
                             <!-- 📊 Average Rating -->
-                            <div class="avg-rating">
+                            <div class="avg-rating small text-muted">
                                 Average: @avgRating.ToString("0.0") / 5
                             </div>
                         </div>
@@ -115,136 +118,121 @@
             </div>
         }
     </div>
-</div>
+
 
 <!-- Hidden current user id -->
 <input type="hidden" id="currentUserId" value="@(currentUserId ?? 0)" />
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("searchInput");
-        const categoryFilter = document.getElementById("categoryFilter");
-        const minPriceInput = document.getElementById("minPrice");
-        const maxPriceInput = document.getElementById("maxPrice");
-        const ratingFilter = document.getElementById("ratingFilter");
-        const books = document.querySelectorAll("#booksGrid .book-card");
-        const resultCount = document.getElementById("resultCount");
-        const currentUserId = document.getElementById("currentUserId").value;
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const categoryFilter = document.getElementById("categoryFilter");
+            const minPriceInput = document.getElementById("minPrice");
+            const maxPriceInput = document.getElementById("maxPrice");
+            const ratingFilter = document.getElementById("ratingFilter");
+            const books = document.querySelectorAll("#booksGrid .book-card");
+            const resultCount = document.getElementById("resultCount");
+            const currentUserId = document.getElementById("currentUserId").value;
 
-        // === Filtering logic ===
-        function filterBooks() {
-            const searchTerm = searchInput.value.toLowerCase();
-            const selectedCategory = categoryFilter.value;
-            const minPrice = parseFloat(minPriceInput.value) || 0;
-            const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
-            const minRating = parseFloat(ratingFilter.value) || 0;
+            // ===== Filters =====
+            function filterBooks() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedCategory = categoryFilter.value;
+                const minPrice = parseFloat(minPriceInput.value) || 0;
+                const maxPrice = parseFloat(maxPriceInput.value) || Infinity;
+                const minRating = parseFloat(ratingFilter.value) || 0;
 
-            let visibleCount = 0;
+                let visibleCount = 0;
 
-            books.forEach(book => {
-                const title = book.dataset.title || "";
-                const author = book.dataset.author || "";
-                const subject = book.dataset.subject || "";
-                const category = book.dataset.category || "";
-                const price = parseFloat(book.dataset.price) || 0;
-                const rating = parseFloat(book.dataset.rating) || 0;
+                books.forEach(book => {
+                    const title = book.dataset.title || "";
+                    const author = book.dataset.author || "";
+                    const subject = book.dataset.subject || "";
+                    const category = book.dataset.category || "";
+                    const price = parseFloat(book.dataset.price) || 0;
+                    const rating = parseFloat(book.dataset.rating) || 0;
 
-                const matchesSearch =
-                    title.includes(searchTerm) ||
-                    author.includes(searchTerm) ||
-                    subject.includes(searchTerm);
+                    const matchesSearch = title.includes(searchTerm) || author.includes(searchTerm) || subject.includes(searchTerm);
+                    const matchesCategory = selectedCategory === "" || category === selectedCategory;
+                    const matchesPrice = price >= minPrice && price <= maxPrice;
+                    const matchesRating = rating >= minRating;
 
-                const matchesCategory =
-                    selectedCategory === "" || category === selectedCategory;
+                    const isVisible = matchesSearch && matchesCategory && matchesPrice && matchesRating;
 
-                const matchesPrice = price >= minPrice && price <= maxPrice;
-
-                const matchesRating = rating >= minRating;
-
-                const isVisible = matchesSearch && matchesCategory && matchesPrice && matchesRating;
-
-                book.parentElement.style.display = isVisible ? "" : "none";
-                if (isVisible) visibleCount++;
-            });
-
-            resultCount.textContent = visibleCount + " books found";
-        }
-
-        searchInput.addEventListener("input", filterBooks);
-        categoryFilter.addEventListener("change", filterBooks);
-        minPriceInput.addEventListener("input", filterBooks);
-        maxPriceInput.addEventListener("input", filterBooks);
-        ratingFilter.addEventListener("change", filterBooks);
-
-        // Run once at load
-        filterBooks();
-
-        // === ⭐ Rating system ===
-        document.querySelectorAll(".star-rating").forEach(starContainer => {
-            const stars = starContainer.querySelectorAll(".star");
-            let currentRating = parseInt(starContainer.dataset.current) || 0;
-            const bookId = starContainer.dataset.bookid;
-
-            // Pre-fill selected rating
-            if (currentRating > 0) {
-                stars.forEach(s => {
-                    const value = parseInt(s.getAttribute("data-value"));
-                    s.classList.toggle("selected", value <= currentRating);
+                    book.closest(".book-card-wrapper").style.display = isVisible ? "" : "none";
+                    if (isVisible) visibleCount++;
                 });
+
+                resultCount.textContent = visibleCount + " books found";
             }
 
-            // Events
-            stars.forEach(star => {
-                star.addEventListener("mouseenter", function () {
-                    const rating = parseInt(this.getAttribute("data-value"));
+            searchInput.addEventListener("input", filterBooks);
+            categoryFilter.addEventListener("change", filterBooks);
+            minPriceInput.addEventListener("input", filterBooks);
+            maxPriceInput.addEventListener("input", filterBooks);
+            ratingFilter.addEventListener("change", filterBooks);
+            filterBooks();
+
+            // ===== Star Ratings =====
+            document.querySelectorAll(".star-rating").forEach(starContainer => {
+                const stars = starContainer.querySelectorAll(".star");
+                let currentRating = parseInt(starContainer.dataset.current) || 0;
+                const bookId = starContainer.dataset.bookid;
+
+                function renderStars(rating) {
                     stars.forEach(s => {
-                        const value = parseInt(s.getAttribute("data-value"));
-                        s.classList.toggle("hover", value <= rating);
+                        const value = parseInt(s.dataset.value);
+                        s.classList.toggle("selected", value <= rating);
                     });
-                });
+                }
 
-                starContainer.addEventListener("mouseleave", function () {
-                    stars.forEach(s => s.classList.remove("hover"));
-                });
+                renderStars(currentRating);
 
-                star.addEventListener("click", function (e) {
-                    e.stopPropagation();
-                    e.preventDefault();
+                stars.forEach(star => {
+                    // Hover preview
+                    star.addEventListener("mouseenter", function (e) {
+                        e.stopPropagation();
+                        const hoverValue = parseInt(this.dataset.value);
+                        renderStars(hoverValue);
+                    });
 
-                    const rating = parseInt(this.getAttribute("data-value"));
+                    // Reset on leave
+                    starContainer.addEventListener("mouseleave", function () {
+                        renderStars(currentRating);
+                    });
 
-                    if (!currentUserId || currentUserId === "0") {
-                        alert("Please log in to rate books.");
-                        return;
-                    }
+                    // Save rating
+                    star.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        e.stopPropagation(); // prevent card navigation
 
-                    // Toggle rating
-                    if (rating === currentRating) {
-                        currentRating = 0;
-                        stars.forEach(s => s.classList.remove("selected"));
-                    } else {
+                        const rating = parseInt(this.dataset.value);
+
+                        if (!currentUserId || currentUserId === "0") {
+                            alert("Please log in to rate books.");
+                            return;
+                        }
+
                         currentRating = rating;
-                        stars.forEach(s => {
-                            const value = parseInt(s.getAttribute("data-value"));
-                            s.classList.toggle("selected", value <= rating);
-                        });
-                    }
+                        renderStars(currentRating);
 
-                    // Send AJAX to backend
-                    fetch('/Rates/RateBook', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                        body: `bookId=${bookId}&rating=${currentRating}`
-                    })
+                        fetch('/Rates/RateBook', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: `bookId=${bookId}&rating=${currentRating}`
+                        })
                         .then(res => res.json())
                         .then(data => {
-                            if (data.success) {
-                                console.log(`Saved rating ${currentRating} for book ${bookId}`);
+                            if (data.success && data.avgRating !== undefined) {
+                                const avgText = starContainer.parentElement.querySelector(".avg-rating");
+                                avgText.textContent = `Average: ${data.avgRating} / 5`;
                             }
                         })
                         .catch(err => console.error("Error:", err));
+                    });
                 });
             });
         });
-    });
-</script>
+    </script>
+}

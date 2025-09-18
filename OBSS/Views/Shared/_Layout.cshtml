@@ -9,103 +9,137 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - OBSS</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="~/css/site.css" rel="stylesheet" asp-append-version="true" />
     @RenderSection("Head", required: false)
 </head>
-<body>
-    <!-- Skip to content link for accessibility -->
-    <a href="#main-content" class="skip-to-content">Skip to content</a>
+<body class="d-flex flex-column min-vh-100">
+    <!-- Skip to content -->
+    <a href="#main-content" class="visually-hidden-focusable">Skip to content</a>
 
-    <!-- Site Header -->
-    <header class="site-header">
-        <nav class="navbar">
-            <div class="container navbar-container">
+    <!-- Navbar -->
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom shadow-sm fixed-top" id="mainNavbar">
+            <div class="container-fluid">
                 <!-- Logo -->
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-logo" aria-label="OBSS Home">
-                    <img src="~/OBSS-LOGO.png" alt="OBSS Logo" />
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Welcome">
+                    <img src="~/OBSS-LOGO.png" alt="OBSS Logo" height="40" class="me-2" />
                 </a>
 
-                <!-- Navigation Links -->
-                <ul class="nav-links">
-                    @if (User.Identity?.IsAuthenticated ?? false)
-                    {
+                <!-- Toggle -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
+                        aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-
-                        <!-- Admin-only -->
-                        @if (User.IsInRole("Admin"))
+                <!-- Links -->
+                <div class="collapse navbar-collapse" id="navbarMain">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Explore Books</a></li>
+                        @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                            <!-- Everyone (authenticated) -->
-                            <li><a asp-controller="Books" asp-action="Index" class="nav-link">Books</a></li>
-                            <li><a asp-controller="Categories" asp-action="Index" class="nav-link">Categories</a></li>
-                            <li><a asp-controller="Rates" asp-action="Index" class="nav-link">Rates</a></li>
-
-                            <li><a asp-controller="Carts" asp-action="Index" class="nav-link">Carts</a></li>
-                            <li><a asp-controller="CartDetails" asp-action="Index" class="nav-link">Cart Details</a></li>
-                            <li><a asp-controller="Sales" asp-action="Index" class="nav-link">Sales</a></li>
-                            <li><a asp-controller="SalesDetails" asp-action="Index" class="nav-link">Sales Details</a></li>
-
-                            <li><a asp-controller="Users" asp-action="Index" class="nav-link">Users</a></li>
-                            <li><a asp-controller="UserTypes" asp-action="Index" class="nav-link">User Types</a></li>
-
-                            <li><a asp-controller="Books" asp-action="RequiredBooks" class="nav-link">Required Books</a></li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">Books</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Categories" asp-action="Index">Categories</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Rates" asp-action="Index">Rates</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="Index">Carts</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="CartDetails" asp-action="Index">Cart Details</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Sales" asp-action="Index">Sales</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="SalesDetails" asp-action="Index">Sales Details</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Users</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="UserTypes" asp-action="Index">User Types</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="RequiredBooks">Required Books</a></li>
+                            }
+                            else if (User.IsInRole("Customer"))
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="MyCart">My Cart</a></li>
+                            }
                         }
-                        else if (User.IsInRole("Customer"))
+                    </ul>
+
+                    <!-- Right Side -->
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <!-- Theme toggle -->
+                        <button id="themeToggle" class="btn btn-outline-light btn-sm" aria-label="Toggle theme">
+                            <span id="themeIcon">🌓</span>
+                        </button>
+
+                        @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                            <!-- My Cart link -->
-                            <li><a asp-controller="Carts" asp-action="MyCart" class="nav-link">My Cart</a></li>
+                            <!-- User Dropdown -->
+                            <div class="dropdown">
+                                <a class="btn btn-outline-light btn-sm dropdown-toggle w-100 text-truncate"
+                                   href="#" id="userDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    @User.Identity!.Name
+                                    <small class="d-none d-md-inline">(@User.FindFirst(ClaimTypes.Role)?.Value)</small>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-responsive"
+                                    aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">My Profile</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-danger w-100">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
                         }
-                    }
-                </ul>
-
-
-                <!-- User Info and Theme Toggle -->
-                <div class="auth-info">
-                    <button id="themeToggle" class="btn-theme" aria-label="Toggle theme">
-                        <span id="themeIcon">🌓</span>
-                    </button>
-
-                    @if (User.Identity?.IsAuthenticated ?? false)
-                    {
-                        <!-- Greeting links to MyProfile -->
-                        <a asp-controller="Account" asp-action="MyProfile" class="user-greeting">
-                            @User.Identity!.Name (@User.FindFirst(ClaimTypes.Role)?.Value)
-                        </a>
-
-                        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-secondary">Logout</button>
-                        </form>
-                    }
-                    else
-                    {
-                        <a asp-controller="Account" asp-action="Login" class="btn btn-primary">Login</a>
-                    }
-
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-accent btn-sm">Login</a>
+                        }
+                    </div>
                 </div>
             </div>
         </nav>
     </header>
 
-    <!-- Main Content -->
-    <main id="main-content" class="page-container">
-        @RenderBody()
+    <!-- Main -->
+    <main id="main-content" class="flex-grow-1 container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                @RenderBody()
+            </div>
+        </div>
     </main>
 
-    <!-- Site Footer -->
-    <footer class="site-footer">
-        <div class="container footer-content">
-            <nav class="footer-nav">
-                <a asp-controller="Home" asp-action="Index" class="footer-link">Home</a>
+    <!-- Footer -->
+    <footer class="footer-custom py-3 mt-auto">
+        <div class="container-fluid d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start">
+            <nav class="mb-2 mb-md-0">
+                <a asp-controller="Home" asp-action="Index" class="footer-link me-3">Home</a>
                 <a asp-controller="Home" asp-action="Privacy" class="footer-link">Privacy</a>
             </nav>
-            <p class="copyright">&copy; @DateTime.Now.Year OBSS</p>
+            <p class="mb-0">&copy; @DateTime.Now.Year OBSS</p>
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
+        // ✅ Adjust body padding dynamically
+        document.addEventListener('DOMContentLoaded', () => {
+            function adjustBodyPadding() {
+                const nav = document.getElementById('mainNavbar');
+                if (nav) {
+                    document.body.style.paddingTop = nav.offsetHeight + 'px';
+                }
+            }
+            adjustBodyPadding();
+            window.addEventListener('resize', adjustBodyPadding);
+        });
+    </script>
+
+    <script>
+        // Dark/Light mode toggle
         document.addEventListener('DOMContentLoaded', function () {
             const rootEl = document.documentElement;
             const bodyEl = document.body;

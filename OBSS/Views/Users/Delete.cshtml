@@ -1,75 +1,64 @@
 ﻿@model OBSS.Models.User
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete User";
 }
 
-<h1>Delete</h1>
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title text-danger">Delete User</h1>
+            <p class="text-muted">Are you sure you want to delete this user?</p>
+        </div>
+    </div>
 
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>User</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Password)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Password)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.FirstName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.FirstName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.LastName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.LastName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Birthdate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Birthdate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ContactNumber)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ContactNumber)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Gender)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Gender.GenderId)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UserTypeNavigation)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UserTypeNavigation.TypeId)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="UserId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    <!-- Centered Delete Card -->
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-sm border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Confirm Deletion</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.UserName)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.UserName)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.FirstName)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.FirstName)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.LastName)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.LastName)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Email)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Email)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.ContactNumber)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.ContactNumber)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Birthdate)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Birthdate)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Gender)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Gender.GenderDesc)</dd>
+
+                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.UserTypeNavigation)</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.UserTypeNavigation.TypeDesc)</dd>
+                    </dl>
+                </div>
+                <div class="card-footer d-flex justify-content-end gap-2">
+                    <form asp-action="Delete" method="post" class="d-inline">
+                        <input type="hidden" asp-for="UserId" />
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </form>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> Cancel
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

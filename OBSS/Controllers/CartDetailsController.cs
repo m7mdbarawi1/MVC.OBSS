@@ -22,14 +22,16 @@ namespace OBSS.Controllers
         // GET: CartDetails
         public async Task<IActionResult> Index()
         {
-            var oBSSContext = _context.CartDetails.Include(c => c.Book).Include(c => c.Cart);
+            var oBSSContext = _context.CartDetails
+                .Include(c => c.Book)
+                .Include(c => c.Cart);
             return View(await oBSSContext.ToListAsync());
         }
 
-        // GET: CartDetails/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: CartDetails/Details
+        public async Task<IActionResult> Details(int? cartId, int? bookId)
         {
-            if (id == null)
+            if (cartId == null || bookId == null)
             {
                 return NotFound();
             }
@@ -37,7 +39,8 @@ namespace OBSS.Controllers
             var cartDetail = await _context.CartDetails
                 .Include(c => c.Book)
                 .Include(c => c.Cart)
-                .FirstOrDefaultAsync(m => m.CartId == id);
+                .FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
+
             if (cartDetail == null)
             {
                 return NotFound();
@@ -55,8 +58,6 @@ namespace OBSS.Controllers
         }
 
         // POST: CartDetails/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("CartId,BookId,Quantity")] CartDetail cartDetail)
@@ -72,32 +73,33 @@ namespace OBSS.Controllers
             return View(cartDetail);
         }
 
-        // GET: CartDetails/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: CartDetails/Edit
+        public async Task<IActionResult> Edit(int? cartId, int? bookId)
         {
-            if (id == null)
+            if (cartId == null || bookId == null)
             {
                 return NotFound();
             }
 
-            var cartDetail = await _context.CartDetails.FindAsync(id);
+            var cartDetail = await _context.CartDetails
+                .FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
+
             if (cartDetail == null)
             {
                 return NotFound();
             }
+
             ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookId", cartDetail.BookId);
             ViewData["CartId"] = new SelectList(_context.Carts, "CartId", "CartId", cartDetail.CartId);
             return View(cartDetail);
         }
 
-        // POST: CartDetails/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: CartDetails/Edit
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("CartId,BookId,Quantity")] CartDetail cartDetail)
+        public async Task<IActionResult> Edit(int cartId, int bookId, [Bind("CartId,BookId,Quantity")] CartDetail cartDetail)
         {
-            if (id != cartDetail.CartId)
+            if (cartId != cartDetail.CartId || bookId != cartDetail.BookId)
             {
                 return NotFound();
             }
@@ -111,7 +113,7 @@ namespace OBSS.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CartDetailExists(cartDetail.CartId))
+                    if (!CartDetailExists(cartId, bookId))
                     {
                         return NotFound();
                     }
@@ -127,10 +129,10 @@ namespace OBSS.Controllers
             return View(cartDetail);
         }
 
-        // GET: CartDetails/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: CartDetails/Delete
+        public async Task<IActionResult> Delete(int? cartId, int? bookId)
         {
-            if (id == null)
+            if (cartId == null || bookId == null)
             {
                 return NotFound();
             }
@@ -138,7 +140,8 @@ namespace OBSS.Controllers
             var cartDetail = await _context.CartDetails
                 .Include(c => c.Book)
                 .Include(c => c.Cart)
-                .FirstOrDefaultAsync(m => m.CartId == id);
+                .FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
+
             if (cartDetail == null)
             {
                 return NotFound();
@@ -147,24 +150,26 @@ namespace OBSS.Controllers
             return View(cartDetail);
         }
 
-        // POST: CartDetails/Delete/5
+        // POST: CartDetails/Delete
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int cartId, int bookId)
         {
-            var cartDetail = await _context.CartDetails.FindAsync(id);
+            var cartDetail = await _context.CartDetails
+                .FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
+
             if (cartDetail != null)
             {
                 _context.CartDetails.Remove(cartDetail);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CartDetailExists(int id)
+        private bool CartDetailExists(int cartId, int bookId)
         {
-            return _context.CartDetails.Any(e => e.CartId == id);
+            return _context.CartDetails.Any(e => e.CartId == cartId && e.BookId == bookId);
         }
     }
 }

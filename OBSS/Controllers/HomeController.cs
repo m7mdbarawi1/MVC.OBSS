@@ -17,6 +17,11 @@ namespace OBSS.Controllers
             _context = context;
         }
 
+        public IActionResult Welcome()
+        {
+            return View();
+        }
+
         public async Task<IActionResult> Index()
         {
             var books = await _context.Books

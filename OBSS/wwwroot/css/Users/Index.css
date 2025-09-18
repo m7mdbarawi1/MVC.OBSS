@@ -1,0 +1,15 @@
+﻿/* Users Index Specific Enhancements */
+
+.table-row-hover:hover {
+    background-color: var(--neutral-light) !important;
+    transition: background-color 0.3s ease;
+}
+
+/* Smooth button hover */
+.btn {
+    transition: all 0.2s ease-in-out;
+}
+
+    .btn:hover {
+        transform: translateY(-2px);
+    }

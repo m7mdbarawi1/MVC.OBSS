@@ -1,70 +1,111 @@
 ﻿@model IEnumerable<OBSS.Models.User>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Users";
 }
 
-<h1>Users</h1>
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <h1 class="page-title mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Create New</a>
-</p>
+    <!-- Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search users...">
+                </div>
+            </div>
+        </div>
+    </div>
 
-<!-- Search box -->
-<div class="mb-3">
-    <input type="text" id="searchInput" class="form-control" placeholder="Search users...">
+    <!-- Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.UserName)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Password)</th>
+                                    <th>@Html.DisplayNameFor(model => model.FirstName)</th>
+                                    <th>@Html.DisplayNameFor(model => model.LastName)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Birthdate)</th>
+                                    <th>@Html.DisplayNameFor(model => model.ContactNumber)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Email)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Gender)</th>
+                                    <th>@Html.DisplayNameFor(model => model.UserTypeNavigation)</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="usersTable">
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr class="table-row-hover">
+                                            <td>@item.UserName</td>
+                                            <td><span class="badge bg-secondary">••••••</span></td>
+                                            <td>@item.FirstName</td>
+                                            <td>@item.LastName</td>
+                                            <td>@item.Birthdate.ToString("d")</td>
+                                            <td>@item.ContactNumber</td>
+                                            <td>@item.Email</td>
+                                            <td>@item.Gender?.GenderDesc</td>
+                                            <td>@item.UserTypeNavigation?.TypeDesc</td> <!-- ✅ plain text -->
+                                            <td class="text-center">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                    <a asp-action="Edit" asp-route-id="@item.UserId" class="btn btn-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
+                                                    <a asp-action="Details" asp-route-id="@item.UserId" class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@item.UserId" class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="10" class="text-center text-muted">No users found.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>@Html.DisplayNameFor(model => model.UserName)</th>
-            <th>@Html.DisplayNameFor(model => model.Password)</th>
-            <th>@Html.DisplayNameFor(model => model.FirstName)</th>
-            <th>@Html.DisplayNameFor(model => model.LastName)</th>
-            <th>@Html.DisplayNameFor(model => model.Birthdate)</th>
-            <th>@Html.DisplayNameFor(model => model.ContactNumber)</th>
-            <th>@Html.DisplayNameFor(model => model.Email)</th>
-            <th>@Html.DisplayNameFor(model => model.Gender)</th>
-            <th>@Html.DisplayNameFor(model => model.UserTypeNavigation)</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody id="usersTable">
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.UserName</td>
-                <td>@item.Password</td>
-                <td>@item.FirstName</td>
-                <td>@item.LastName</td>
-                <td>@item.Birthdate.ToShortDateString()</td>
-                <td>@item.ContactNumber</td>
-                <td>@item.Email</td>
-                <td>@item.Gender?.GenderDesc</td>
-                <td>@item.UserTypeNavigation?.TypeDesc</td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.UserId" class="btn btn-sm btn-warning">Edit</a>
-                    <a asp-action="Details" asp-route-id="@item.UserId" class="btn btn-sm btn-info">Details</a>
-                    <a asp-action="Delete" asp-route-id="@item.UserId" class="btn btn-sm btn-danger">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const rows = document.querySelectorAll("#usersTable tr");
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const searchInput = document.getElementById("searchInput");
-        const tableRows = document.querySelectorAll("#usersTable tr");
-
-        searchInput.addEventListener("input", function () {
-            const searchTerm = searchInput.value.toLowerCase();
-
-            tableRows.forEach(row => {
-                const rowText = row.textContent.toLowerCase();
-                row.style.display = rowText.includes(searchTerm) ? "" : "none";
+            searchInput.addEventListener("input", function () {
+                const term = searchInput.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? "" : "none";
+                });
             });
         });
-    });
-</script>
+    </script>
+}

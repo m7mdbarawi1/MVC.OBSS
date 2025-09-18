@@ -1,71 +1,98 @@
 ﻿@model List<OBSS.Models.CartDetail>
+
 @{
     ViewData["Title"] = "My Cart";
     decimal totalPrice = Model.Sum(cd => cd.Book.Price * cd.Quantity);
 }
-@if (TempData["Info"] != null)
-{
-    <div class="alert alert-info">@TempData["Info"]</div>
-}
 
-<h1>My Cart</h1>
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title">My Cart</h1>
+        </div>
+    </div>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger">@TempData["Error"]</div>
-}
-@if (TempData["Success"] != null)
-{
-    <div class="alert alert-success">@TempData["Success"]</div>
-}
+    <!-- Alerts -->
+    @if (TempData["Info"] != null)
+    {
+        <div class="alert alert-info">@TempData["Info"]</div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">@TempData["Error"]</div>
+    }
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">@TempData["Success"]</div>
+    }
 
-@if (!Model.Any())
-{
-    <p>Your cart is empty.</p>
-}
-else
-{
-    <table class="table table-bordered table-striped" id="cartTable">
-        <thead>
-            <tr>
-                <th>Book</th>
-                <th>Author</th>
-                <th>Category</th>
-                <th>Quantity</th>
-                <th>Price</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr data-book-id="@item.BookId">
-                    <td>@item.Book.BookTitle</td>
-                    <td>@item.Book.Author</td>
-                    <td>@item.Book.Category?.CategoryDesc</td>
-                    <td>
-                        <input type="number" min="1" value="@item.Quantity" class="form-control qty-input" style="width:80px;" />
-                    </td>
-                    <td class="item-price">@((item.Book.Price * item.Quantity).ToString("C"))</td>
-                    <td>
-                        <form asp-action="RemoveFromCart" method="post">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="bookId" value="@item.BookId" />
-                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <!-- Empty Cart -->
+    @if (!Model.Any())
+    {
+        <div class="card shadow-sm">
+            <div class="card-body text-center text-muted">
+                Your cart is empty.
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="cartTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Book</th>
+                                <th>Author</th>
+                                <th>Category</th>
+                                <th style="width:100px;">Quantity</th>
+                                <th>Price</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr data-book-id="@item.BookId">
+                                    <td>@item.Book.BookTitle</td>
+                                    <td>@item.Book.Author</td>
+                                    <td>@item.Book.Category?.CategoryDesc</td>
+                                    <td>
+                                        <input type="number" min="1" value="@item.Quantity"
+                                               class="form-control form-control-sm qty-input text-center" />
+                                    </td>
+                                    <td class="item-price">@((item.Book.Price * item.Quantity).ToString("C"))</td>
+                                    <td class="text-center">
+                                        <form asp-action="RemoveFromCart" method="post" class="d-inline">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="bookId" value="@item.BookId" />
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="bi bi-trash"></i> Remove
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-    <h3>Total: <span id="totalPrice">@totalPrice.ToString("C")</span></h3>
-
-    <form asp-action="Purchase" method="post">
-        @Html.AntiForgeryToken()
-        <button type="submit" class="btn btn-success btn-lg">Purchase</button>
-    </form>
-}
+        <!-- Total + Purchase -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+            <h4>Total: <span id="totalPrice">@totalPrice.ToString("C")</span></h4>
+            <form asp-action="Purchase" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="btn btn-success btn-lg">
+                    <i class="bi bi-cart-check"></i> Purchase
+                </button>
+            </form>
+        </div>
+    }
+</div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -1,0 +1,44 @@
+﻿/* Page title */
+.page-title {
+    color: var(--primary-blue);
+    font-weight: 700;
+    font-size: 1.75rem;
+}
+
+/* Hover effect for rows */
+.table-row-hover {
+    transition: background-color 0.2s ease;
+}
+
+    .table-row-hover:hover {
+        background-color: var(--neutral-light);
+    }
+
+.dark-theme .table-row-hover:hover {
+    background-color: #1e293b;
+}
+
+/* Buttons */
+.btn-action {
+    min-width: 100px;
+    font-weight: 500;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+    .btn-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+/* Responsive actions */
+@media (max-width: 768px) {
+    .btn-action {
+        flex: 1 1 100%;
+    }
+
+    td .btn-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.5rem;
+    }
+}

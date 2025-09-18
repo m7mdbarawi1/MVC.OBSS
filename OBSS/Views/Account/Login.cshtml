@@ -1,37 +1,51 @@
 ﻿@{
     ViewData["Title"] = "Login";
 }
-<link href="~/css/account/login.css" rel="stylesheet" />
 
-<main class="auth-page">
-    <section class="auth-section">
-        <h1 class="auth-title">Login</h1>
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title">Login</h1>
+        </div>
+    </div>
 
-        <form method="post" asp-controller="Account" asp-action="Login" class="auth-form">
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input id="username" name="username" type="text" class="form-control" placeholder="Enter your username" required />
+    <!-- Centered Login Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form method="post" asp-controller="Account" asp-action="Login">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input id="username" name="username" type="text" class="form-control" placeholder="Enter your username" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input id="password" name="password" type="password" class="form-control" placeholder="Enter your password" required />
+                        </div>
+
+                        @if (ViewBag.Error != null)
+                        {
+                            <div class="text-danger mb-3">@ViewBag.Error</div>
+                        }
+
+                        <!-- Login Button -->
+                        <div class="d-grid mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-box-arrow-in-right"></i> Login
+                            </button>
+                        </div>
+
+                        <!-- Register Link -->
+                        <p class="text-center mt-3 mb-0">
+                            Don’t have an account?
+                            <a asp-controller="Account" asp-action="Register">Register here</a>.
+                        </p>
+                    </form>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input id="password" name="password" type="password" class="form-control" placeholder="Enter your password" required />
-            </div>
-
-            @if (ViewBag.Error != null)
-            {
-                <div class="form-error text-danger">@ViewBag.Error</div>
-            }
-
-            <div class="form-actions mt-3">
-                <button type="submit" class="btn btn-primary w-100">Login</button>
-            </div>
-
-            <!-- Register link -->
-            <p class="text-center mt-3">
-                Don't have an account?
-                <a asp-controller="Account" asp-action="Register">Register here</a>.
-            </p>
-        </form>
-    </section>
-</main>
+        </div>
+    </div>
+</div>

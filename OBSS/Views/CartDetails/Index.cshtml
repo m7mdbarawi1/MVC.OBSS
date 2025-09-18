@@ -1,47 +1,102 @@
 ﻿@model IEnumerable<OBSS.Models.CartDetail>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Cart Details";
 }
 
-<h1>Index</h1>
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <h1 class="page-title mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create New
+            </a>
+        </div>
+    </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Quantity)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Book)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Cart)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Quantity)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Book.BookId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cart.CartId)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Details", "Details", new { /* id=item.PrimaryKey */ }) |
-                @Html.ActionLink("Delete", "Delete", new { /* id=item.PrimaryKey */ })
-            </td>
-        </tr>
+    <!-- Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Search cart details...">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.Quantity)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Book)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Cart)</th>
+                                    <th class="text-center">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cartDetailsTable">
+                                @if (Model != null && Model.Any())
+                                {
+                                    foreach (var item in Model)
+                                    {
+                                        <tr class="table-row-hover">
+                                            <td>@item.Quantity</td>
+                                            <td>@item.Book?.BookTitle</td>
+                                            <td>Cart #@item.Cart?.CartId</td>
+                                            <td class="text-center">
+                                                <div class="d-flex flex-wrap justify-content-center gap-2">
+                                                    <a asp-action="Edit" asp-route-cartId="@item.CartId" asp-route-bookId="@item.BookId"
+                                                       class="btn btn-secondary btn-sm">
+                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                    </a>
+                                                    <a asp-action="Details" asp-route-cartId="@item.CartId" asp-route-bookId="@item.BookId"
+                                                       class="btn btn-accent btn-sm">
+                                                        <i class="bi bi-info-circle"></i> Details
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-cartId="@item.CartId" asp-route-bookId="@item.BookId"
+                                                       class="btn btn-danger btn-sm">
+                                                        <i class="bi bi-trash"></i> Delete
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="4" class="text-center text-muted">No cart details found.</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById("searchInput");
+            const rows = document.querySelectorAll("#cartDetailsTable tr");
+
+            searchInput.addEventListener("input", function () {
+                const term = searchInput.value.toLowerCase();
+                rows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(term) ? "" : "none";
+                });
+            });
+        });
+    </script>
 }
-    </tbody>
-</table>

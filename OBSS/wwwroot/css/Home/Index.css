@@ -1,144 +1,59 @@
-﻿/* ==========================================
-   BOOK CARD GRID
-========================================== */
-.books-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: var(--space-lg);
+﻿.page-title {
+    color: var(--primary-blue);
+    font-weight: 700;
 }
 
-@media (max-width: 992px) {
-    .books-grid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+.book-card-wrapper {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-@media (max-width: 768px) {
-    .books-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 480px) {
-    .books-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-/* ==========================================
-   BOOK CARD
-========================================== */
-.book-card {
-    display: flex;
-    flex-direction: column;
-    background: var(--surface);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--border);
-    transition: var(--transition);
-    overflow: hidden;
-    height: 100%;
-    cursor: pointer;
-    padding-bottom: 10px;
-}
-
-    .book-card:hover {
+    .book-card-wrapper:hover {
         transform: translateY(-4px);
-        box-shadow: var(--shadow-md);
-        border-color: var(--g-400);
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
     }
 
-    /* Image */
-    .book-card img {
-        width: 100%;
-        height: 250px;
-        object-fit: cover;
-        background: var(--surface-2);
-        border-bottom: 1px solid var(--border);
-    }
-
-/* Card body */
-.book-card-body {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding: var(--space-lg);
-}
-
-.book-card-title {
-    font-size: 1.05rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: var(--space-xs);
-}
-
-.book-card-text {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-bottom: var(--space-xs);
-    line-height: 1.4;
-}
-
-/* Price styling */
-.book-card-price {
-    font-weight: 700;
-    color: var(--g-600);
-    margin-bottom: var(--space-md);
-}
-
-.dark-theme .book-card-price {
-    color: var(--g-400);
-}
-
-/* Button */
-.book-card .btn-primary {
-    margin-top: auto;
-    background: linear-gradient(135deg, var(--g-500), var(--g-700));
-    border-color: var(--g-600);
-    color: var(--white);
-    text-align: center;
-}
-
-    .book-card .btn-primary:hover {
-        background: linear-gradient(135deg, var(--g-400), var(--g-600));
-    }
-
-/* ==========================================
-   DARK MODE COMPATIBILITY
-========================================== */
-.dark-theme .book-card {
-    background: var(--surface);
-    border-color: var(--border);
-    box-shadow: var(--shadow-sm);
-}
-
-    .dark-theme .book-card:hover {
-        box-shadow: var(--shadow-md);
-    }
-
-.book-card-link {
-    text-decoration: none;
+/* Make full card clickable */
+.card-link-wrapper {
+    display: block;
     color: inherit;
+    text-decoration: none;
 }
 
-/* ==========================================
-   ⭐ STAR RATING
-========================================== */
+.book-card .card-img-top {
+    height: 220px;
+    object-fit: cover;
+    border-bottom: 1px solid var(--neutral-light);
+}
+
+.book-card .card-title {
+    font-size: 1.1rem;
+    color: var(--primary-blue);
+}
+
+.book-card .card-text {
+    font-size: 0.9rem;
+}
+
+/* ===== Stars ===== */
 .star-rating {
-    margin-top: 8px;
     display: inline-flex;
-    flex-direction: row; /* left to right */
-    gap: 4px;
+    gap: 0.2rem;
 }
 
-.star {
-    font-size: 1.5rem;
-    color: #ccc;
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-    .star.hover,
-    .star.selected {
-        color: gold;
+    .star-rating .star {
+        cursor: pointer;
+        font-size: 1.6rem;
+        color: #ccc;
+        transition: color 0.25s ease, transform 0.2s ease;
     }
+
+        /* Fill animation */
+        .star-rating .star:hover {
+            transform: scale(1.2);
+        }
+
+        /* Selected or hovered state */
+        .star-rating .star.selected,
+        .star-rating .star.hover {
+            color: var(--accent-yellow);
+        }

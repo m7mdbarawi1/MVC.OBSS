@@ -1,41 +1,61 @@
 ﻿@model OBSS.Models.CartDetail
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Cart Detail";
 }
 
-<h1>Create</h1>
+<div class="container-fluid page-wrapper mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title">Create Cart Detail</h1>
+        </div>
+    </div>
 
-<h4>CartDetail</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="CartId" class="control-label"></label>
-                <select asp-for="CartId" class ="form-control" asp-items="ViewBag.CartId"></select>
+    <!-- Centered Create Form -->
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="CartId" class="form-label"></label>
+                            <select asp-for="CartId" class="form-select" asp-items="ViewBag.CartId"></select>
+                            <span asp-validation-for="CartId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="BookId" class="form-label"></label>
+                            <select asp-for="BookId" class="form-select" asp-items="ViewBag.BookId"></select>
+                            <span asp-validation-for="BookId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Quantity" class="form-label"></label>
+                            <input asp-for="Quantity" class="form-control" type="number" />
+                            <span asp-validation-for="Quantity" class="text-danger"></span>
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-plus-circle"></i> Create
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="BookId" class="control-label"></label>
-                <select asp-for="BookId" class ="form-control" asp-items="ViewBag.BookId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Quantity" class="control-label"></label>
-                <input asp-for="Quantity" class="form-control" />
-                <span asp-validation-for="Quantity" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
