@@ -2,6 +2,10 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using OBSS.Data;
 
+using Microsoft.AspNetCore.Mvc.Razor;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // 1) DbContext (reads "DefaultConnection" from appsettings.json)
@@ -23,9 +27,28 @@ builder.Services.AddAuthentication("OBSSAuth")
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+
+builder.Services.AddLocalization(options => 
+{
+    options.ResourcesPath = "Resources";
+
+});
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var supportedCultures = new[] {
+        new CultureInfo("en-US"),
+        new CultureInfo("ar-JO")
+    };
+    options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.SupportedUICultures = supportedCultures;
+});
 
 var app = builder.Build();
+
+app.UseRequestLocalization();
 
 // 3) Pipeline
 if (app.Environment.IsDevelopment())

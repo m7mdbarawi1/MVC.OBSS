@@ -16,4 +16,20 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Resources\Views\Account\" />
+    <Folder Include="Resources\Views\Books\" />
+    <Folder Include="Resources\Views\CartDetails\" />
+    <Folder Include="Resources\Views\Carts\" />
+    <Folder Include="Resources\Views\Categories\" />
+    <Folder Include="Resources\Views\Dashboard\" />
+    <Folder Include="Resources\Views\Genders\" />
+    <Folder Include="Resources\Views\Rates\" />
+    <Folder Include="Resources\Views\SalesDetails\" />
+    <Folder Include="Resources\Views\Sales\" />
+    <Folder Include="Resources\Views\Shared\" />
+    <Folder Include="Resources\Views\Users\" />
+    <Folder Include="Resources\Views\UserTypes\" />
+  </ItemGroup>
+
 </Project>
