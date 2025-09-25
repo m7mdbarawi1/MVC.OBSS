@@ -27,7 +27,6 @@
                     <img src="~/OBSS-LOGO.png" alt="OBSS Logo" height="40" class="me-2" />
                 </a>
 
-                <!-- Toggle -->
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain"
                         aria-controls="navbarMain" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -36,9 +35,14 @@
                 <!-- Links -->
                 <div class="collapse navbar-collapse" id="navbarMain">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Explore Books</a></li>
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
+                            <!-- Home (role-based redirect) -->
+                            <a class="nav-link text-white fw-bold" asp-controller="Account" asp-action="HomeRedirect">
+                                Home
+                            </a>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Explore Books</a></li>
+
                             @if (User.IsInRole("Admin"))
                             {
                                         <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">Books</a></li>
@@ -75,8 +79,6 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                                 <li><a class="dropdown-item lang-option" data-lang="en" href="#">English</a></li>
                                 <li><a class="dropdown-item lang-option" data-lang="ar" href="#">العربية</a></li>
-                                <li><a class="dropdown-item lang-option" data-lang="fr" href="#">Français</a></li>
-                                <li><a class="dropdown-item lang-option" data-lang="es" href="#">Español</a></li>
                             </ul>
                         </div>
 
@@ -123,29 +125,18 @@
             </div>
         </div>
     </main>
-
-    <!-- Footer -->
     <footer class="footer-custom mt-auto pt-5 pb-3">
         <div class="container">
-            <div class="row g-4">
+            <div class="row g-4 justify-content-center text-center">
                 <!-- Get in Touch -->
                 <div class="col-md-4">
                     <h5 class="fw-bold">Get in Touch</h5>
-                    <form class="d-flex flex-column gap-2 mt-3">
-                        <input type="email" class="form-control" placeholder="Your email" required />
+                    <form class="d-flex flex-column gap-2 mt-3 align-items-center">
+                        <input type="email" class="form-control text-center" placeholder="Your email" required
+                               style="max-width: 250px;" />
                         <button type="submit" class="btn btn-accent btn-sm">Send</button>
                     </form>
                     <p class="small mt-2">Subscribe to our Newsletter.</p>
-                </div>
-
-                <!-- Our Platforms -->
-                <div class="col-md-2">
-                    <h6 class="fw-bold">Our Platforms</h6>
-                    <ul class="list-unstyled mt-3">
-                        <li>Bank-BI®</li>
-                        <li>Bank-BPM®</li>
-                        <li>Bank-CEP®</li>
-                    </ul>
                 </div>
 
                 <!-- Who We Are -->
@@ -164,23 +155,6 @@
                     <h6 class="fw-bold">Offices</h6>
                     <p class="small mt-3 mb-1">Jordan</p>
                     <p class="small mb-2">Tel: +96265805030<br />Wasfi Al Tal St, Amman</p>
-
-                    <p class="small mb-1">Kenya</p>
-                    <p class="small mb-0">Tel: +254202023200<br />TRV Office Suite, Muthithi Road, Westlands</p>
-                </div>
-            </div>
-
-            <!-- Divider -->
-            <hr class="section-divider my-4" />
-
-            <!-- Bottom -->
-            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center text-center">
-                <p class="mb-2 mb-md-0 small">
-                    © 2025 piotech. All rights reserved
-                </p>
-                <div>
-                    <a href="#" class="footer-link me-3">Privacy Policy</a>
-                    <a href="#" class="footer-link">Terms of Service</a>
                 </div>
             </div>
         </div>
@@ -270,6 +244,7 @@
                     setLanguage(selectedLang);
                 });
             });
+
         });
     </script>
 

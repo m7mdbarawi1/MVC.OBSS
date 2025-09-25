@@ -33,8 +33,8 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var gender = await _context.Genders
-                .FirstOrDefaultAsync(m => m.GenderId == id);
+            var gender = await _context.Genders.FirstOrDefaultAsync(m => m.GenderId == id);
+            
             if (gender == null)
             {
                 return NotFound();
@@ -124,8 +124,7 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var gender = await _context.Genders
-                .FirstOrDefaultAsync(m => m.GenderId == id);
+            var gender = await _context.Genders.FirstOrDefaultAsync(m => m.GenderId == id);
             if (gender == null)
             {
                 return NotFound();

@@ -1,6 +1,5 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -30,9 +29,7 @@ namespace OBSS.Controllers
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
         public async Task<IActionResult> Login(string username, string password, string? returnUrl = null)
         {
-            var user = await _context.Users
-                .Include(u => u.UserTypeNavigation)
-                .FirstOrDefaultAsync(u => u.UserName == username && u.Password == password);
+            var user = await _context.Users.Include(u => u.UserTypeNavigation).FirstOrDefaultAsync(u => u.UserName == username && u.Password == password);
 
             if (user == null)
             {
@@ -40,6 +37,7 @@ namespace OBSS.Controllers
                 return View();
             }
 
+            // Build claims
             var displayName = $"{user.FirstName} {user.LastName}".Trim();
             if (string.IsNullOrWhiteSpace(displayName)) displayName = user.UserName;
 
@@ -50,7 +48,7 @@ namespace OBSS.Controllers
                 new Claim("UserTypeId", user.UserType.ToString())
             };
 
-            if (user.UserTypeNavigation != null && !string.IsNullOrWhiteSpace(user.UserTypeNavigation.TypeDesc))
+            if (!string.IsNullOrEmpty(user.UserTypeNavigation?.TypeDesc))
             {
                 claims.Add(new Claim(ClaimTypes.Role, user.UserTypeNavigation.TypeDesc));
             }
@@ -63,6 +61,14 @@ namespace OBSS.Controllers
                 IsPersistent = true
             });
 
+            // Role-based redirection
+            if (user.UserTypeNavigation?.TypeDesc == "Admin")
+                return RedirectToAction("AdminDashboard", "Dashboard");
+
+            if (user.UserTypeNavigation?.TypeDesc == "Customer")
+                return RedirectToAction("CustomerDashboard", "Dashboard");
+
+            // Fallback
             if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 return Redirect(returnUrl);
 
@@ -84,9 +90,7 @@ namespace OBSS.Controllers
         [HttpGet, AllowAnonymous]
         public IActionResult Register()
         {
-            ViewBag.UserTypes = _context.UserTypes
-                .Where(t => t.TypeId != 1)
-                .ToList();
+            ViewBag.UserTypes = _context.UserTypes.Where(t => t.TypeId != 1).ToList();
 
             ViewBag.Genders = _context.Genders.ToList();
 
@@ -129,12 +133,23 @@ namespace OBSS.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
+            // Get role name
+            var role = await _context.UserTypes
+                .Where(t => t.TypeId == user.UserType)
+                .Select(t => t.TypeDesc)
+                .FirstOrDefaultAsync();
+
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim("UserTypeId", user.UserType.ToString())
             };
+
+            if (!string.IsNullOrEmpty(role))
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var identity = new ClaimsIdentity(claims, "OBSSAuth");
             var principal = new ClaimsPrincipal(identity);
@@ -143,6 +158,13 @@ namespace OBSS.Controllers
             {
                 IsPersistent = true
             });
+
+            // Role-based redirection
+            if (role == "Admin")
+                return RedirectToAction("AdminDashboard", "Dashboard");
+
+            if (role == "Customer")
+                return RedirectToAction("CustomerDashboard", "Dashboard");
 
             return RedirectToAction("Index", "Home");
         }
@@ -157,15 +179,85 @@ namespace OBSS.Controllers
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
                 return RedirectToAction("Login");
 
-            var user = await _context.Users
-                .Include(u => u.Gender)
-                .Include(u => u.UserTypeNavigation)
-                .FirstOrDefaultAsync(u => u.UserId == userId);
+            var user = await _context.Users.Include(u => u.Gender).Include(u => u.UserTypeNavigation).FirstOrDefaultAsync(u => u.UserId == userId);
 
             if (user == null)
                 return NotFound();
 
             return View(user);
         }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult HomeRedirect()
+        {
+            if (User.IsInRole("Admin"))
+                return RedirectToAction("AdminDashboard", "Dashboard");
+
+            if (User.IsInRole("Customer"))
+                return RedirectToAction("CustomerDashboard", "Dashboard");
+
+            // fallback
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> MyProfile(User model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+
+            // Update only allowed fields
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.UserName = model.UserName;
+            user.Password = model.Password;
+            user.Email = model.Email;
+            user.ContactNumber = model.ContactNumber;
+
+            _context.Update(user);
+            await _context.SaveChangesAsync();
+
+            ViewBag.Success = "Profile updated successfully!";
+            return View(user);
+        }
+
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteMyAccount()
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
+                return RedirectToAction("Login");
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null) return NotFound();
+
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+
+            // Logout after deleting
+            await HttpContext.SignOutAsync("OBSSAuth");
+
+            return RedirectToAction("Login", "Account");
+        }
+
+
     }
 }

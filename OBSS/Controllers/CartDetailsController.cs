@@ -22,9 +22,7 @@ namespace OBSS.Controllers
         // GET: CartDetails
         public async Task<IActionResult> Index()
         {
-            var oBSSContext = _context.CartDetails
-                .Include(c => c.Book)
-                .Include(c => c.Cart);
+            var oBSSContext = _context.CartDetails.Include(c => c.Book).Include(c => c.Cart);
             return View(await oBSSContext.ToListAsync());
         }
 
@@ -37,9 +35,7 @@ namespace OBSS.Controllers
             }
 
             var cartDetail = await _context.CartDetails
-                .Include(c => c.Book)
-                .Include(c => c.Cart)
-                .FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
+                .Include(c => c.Book).Include(c => c.Cart).FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
 
             if (cartDetail == null)
             {
@@ -81,8 +77,7 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var cartDetail = await _context.CartDetails
-                .FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
+            var cartDetail = await _context.CartDetails.FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
 
             if (cartDetail == null)
             {
@@ -137,10 +132,7 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var cartDetail = await _context.CartDetails
-                .Include(c => c.Book)
-                .Include(c => c.Cart)
-                .FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
+            var cartDetail = await _context.CartDetails.Include(c => c.Book).Include(c => c.Cart).FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
 
             if (cartDetail == null)
             {
@@ -155,8 +147,7 @@ namespace OBSS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int cartId, int bookId)
         {
-            var cartDetail = await _context.CartDetails
-                .FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
+            var cartDetail = await _context.CartDetails.FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
 
             if (cartDetail != null)
             {

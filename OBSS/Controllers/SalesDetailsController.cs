@@ -35,10 +35,8 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var salesDetail = await _context.SalesDetails
-                .Include(s => s.Book)
-                .Include(s => s.Sale)
-                .FirstOrDefaultAsync(m => m.SaleId == id);
+            var salesDetail = await _context.SalesDetails.Include(s => s.Book).Include(s => s.Sale).FirstOrDefaultAsync(m => m.SaleId == id);
+            
             if (salesDetail == null)
             {
                 return NotFound();

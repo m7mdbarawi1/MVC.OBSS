@@ -54,23 +54,32 @@ namespace OBSS.Controllers
             return View();
         }
 
-        // POST: Users/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UserId,UserType,UserName,Password,FirstName,LastName,Birthdate,GenderId,ContactNumber,Email")] User user)
         {
+            if (_context.Users.Any(u => u.Email == user.Email))
+            {
+                ModelState.AddModelError("Email", "This email is already registered.");
+            }
+
+            if (_context.Users.Any(u => u.UserName == user.UserName))
+            {
+                ModelState.AddModelError("UserName", "This username is already taken.");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(user);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["GenderId"] = new SelectList(_context.Genders, "GenderId", "GenderId", user.GenderId);
             ViewData["UserType"] = new SelectList(_context.UserTypes, "TypeId", "TypeId", user.UserType);
             return View(user);
         }
+
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -102,6 +111,16 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
+            if (_context.Users.Any(u => u.Email == user.Email && u.UserId != id))
+            {
+                ModelState.AddModelError("Email", "This email is already registered by another user.");
+            }
+
+            if (_context.Users.Any(u => u.UserName == user.UserName && u.UserId != id))
+            {
+                ModelState.AddModelError("UserName", "This username is already taken by another user.");
+            }
+
             if (ModelState.IsValid)
             {
                 try
@@ -122,10 +141,12 @@ namespace OBSS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["GenderId"] = new SelectList(_context.Genders, "GenderId", "GenderId", user.GenderId);
             ViewData["UserType"] = new SelectList(_context.UserTypes, "TypeId", "TypeId", user.UserType);
             return View(user);
         }
+
 
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -147,18 +168,32 @@ namespace OBSS.Controllers
             return View(user);
         }
 
-        // POST: Users/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _context.Users.FindAsync(id);
+            var user = await _context.Users
+                .Include(u => u.Carts)
+                .Include(u => u.Rates)
+                .Include(u => u.Sales)
+                .FirstOrDefaultAsync(u => u.UserId == id);
+
             if (user != null)
             {
+                // Remove related entities first
+                if (user.Carts.Any())
+                    _context.Carts.RemoveRange(user.Carts);
+
+                if (user.Rates.Any())
+                    _context.Rates.RemoveRange(user.Rates);
+
+                if (user.Sales.Any())
+                    _context.Sales.RemoveRange(user.Sales);
+
                 _context.Users.Remove(user);
+                await _context.SaveChangesAsync();
             }
 
-            await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 

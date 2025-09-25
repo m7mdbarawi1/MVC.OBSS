@@ -33,8 +33,7 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
+            var category = await _context.Categories.FirstOrDefaultAsync(m => m.CategoryId == id);
             if (category == null)
             {
                 return NotFound();
@@ -117,6 +116,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Categories/Delete/5
+        // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -125,29 +125,43 @@ namespace OBSS.Controllers
             }
 
             var category = await _context.Categories
+                .Include(c => c.Books) // load related books
                 .FirstOrDefaultAsync(m => m.CategoryId == id);
+
             if (category == null)
             {
                 return NotFound();
             }
 
+            // Pass info to the view
+            ViewBag.HasBooks = category.Books.Any();
+
             return View(category);
         }
 
-        // POST: Categories/Delete/5
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            var category = await _context.Categories
+                .Include(c => c.Books)  // assumes navigation property exists
+                .FirstOrDefaultAsync(c => c.CategoryId == id);
+
+            if (category == null) return NotFound();
+
+            if (category.Books.Any())
             {
-                _context.Categories.Remove(category);
+                ModelState.AddModelError("", "Cannot delete this category because it has related books.");
+                return View(category); // Show the same view with the error
             }
 
+            _context.Categories.Remove(category);
             await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool CategoryExists(int id)
         {

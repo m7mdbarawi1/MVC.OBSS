@@ -60,7 +60,10 @@
                                     <td>@item.Book.Author</td>
                                     <td>@item.Book.Category?.CategoryDesc</td>
                                     <td>
-                                        <input type="number" min="1" value="@item.Quantity"
+                                        <input type="number"
+                                               min="1"
+                                               max="@item.Book.QuantityInStore"
+                                               value="@item.Quantity"
                                                class="form-control form-control-sm qty-input text-center" />
                                     </td>
                                     <td class="item-price">@((item.Book.Price * item.Quantity).ToString("C"))</td>

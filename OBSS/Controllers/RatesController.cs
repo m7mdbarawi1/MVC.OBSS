@@ -55,14 +55,27 @@ namespace OBSS.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(rate);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                // Check if this user already rated this book
+                var exists = await _context.Rates
+                    .AnyAsync(r => r.BookId == rate.BookId && r.UserId == rate.UserId);
+
+                if (exists)
+                {
+                    ModelState.AddModelError("", "This user has already rated this book.");
+                }
+                else
+                {
+                    _context.Add(rate);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
             }
+
             ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookTitle", rate.BookId);
             ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserName", rate.UserId);
             return View(rate);
         }
+
 
         // GET: Rates/Edit
         public async Task<IActionResult> Edit(int bookId, int userId)
@@ -139,8 +152,7 @@ namespace OBSS.Controllers
 
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var existingRate = _context.Rates
-                .FirstOrDefault(r => r.BookId == bookId && r.UserId == userId);
+            var existingRate = _context.Rates.FirstOrDefault(r => r.BookId == bookId && r.UserId == userId);
 
             if (rating == 0)
             {

@@ -23,7 +23,7 @@ namespace OBSS.Controllers
         {
             var books = await _context.Books
                 .Include(b => b.Category)
-                .Include(b => b.Rates)   // 👈 This is required so you can calculate average
+                .Include(b => b.Rates)   // 👈 For average rating
                 .ToListAsync();
 
             return View(books);
@@ -101,45 +101,58 @@ namespace OBSS.Controllers
         // POST: Books/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Book book, IFormFile? coverImage)
+        public async Task<IActionResult> Edit(int id, Book updatedBook, IFormFile? coverImage)
         {
-            if (id != book.BookId) return NotFound();
+            if (id != updatedBook.BookId) return NotFound();
 
             if (ModelState.IsValid)
             {
-                try
+                var existingBook = await _context.Books.FindAsync(id);
+                if (existingBook == null) return NotFound();
+
+                // Update scalar fields
+                existingBook.BookTitle = updatedBook.BookTitle;
+                existingBook.Author = updatedBook.Author;
+                existingBook.CategoryId = updatedBook.CategoryId;
+                existingBook.Price = updatedBook.Price;
+                existingBook.QuantityInStore = updatedBook.QuantityInStore;
+                existingBook.Subject = updatedBook.Subject;
+                existingBook.PublishingHouse = updatedBook.PublishingHouse;
+                existingBook.Description = updatedBook.Description;
+
+                // Handle cover image if provided
+                if (coverImage != null && coverImage.Length > 0)
                 {
-                    if (coverImage != null && coverImage.Length > 0)
+                    string uploadDir = Path.Combine(_env.WebRootPath, "images");
+                    if (!Directory.Exists(uploadDir))
+                        Directory.CreateDirectory(uploadDir);
+
+                    string fileName = Guid.NewGuid() + Path.GetExtension(coverImage.FileName);
+                    string filePath = Path.Combine(uploadDir, fileName);
+
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
                     {
-                        string uploadDir = Path.Combine(_env.WebRootPath, "images");
-                        if (!Directory.Exists(uploadDir))
-                            Directory.CreateDirectory(uploadDir);
-
-                        string fileName = Guid.NewGuid() + Path.GetExtension(coverImage.FileName);
-                        string filePath = Path.Combine(uploadDir, fileName);
-
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
-                        {
-                            await coverImage.CopyToAsync(fileStream);
-                        }
-
-                        book.CoverImageUrl = "/images/" + fileName;
+                        await coverImage.CopyToAsync(fileStream);
                     }
 
-                    _context.Update(book);
+                    existingBook.CoverImageUrl = "/images/" + fileName;
+                }
+
+                try
+                {
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!BookExists(book.BookId)) return NotFound();
+                    if (!BookExists(updatedBook.BookId)) return NotFound();
                     else throw;
                 }
                 return RedirectToAction(nameof(Index));
             }
 
             var categories = await _context.Categories.ToListAsync();
-            ViewData["CategoryId"] = new SelectList(categories, "CategoryId", "CategoryDesc", book.CategoryId);
-            return View(book);
+            ViewData["CategoryId"] = new SelectList(categories, "CategoryId", "CategoryDesc", updatedBook.CategoryId);
+            return View(updatedBook);
         }
 
         // GET: Books/Delete/5
@@ -161,14 +174,26 @@ namespace OBSS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book != null)
-                _context.Books.Remove(book);
+            var book = await _context.Books
+                .Include(b => b.Rates)
+                .Include(b => b.CartDetails)
+                .Include(b => b.SalesDetails)
+                .FirstOrDefaultAsync(b => b.BookId == id);
 
-            await _context.SaveChangesAsync();
+            if (book != null)
+            {
+                // Clean up related data first to avoid FK constraint errors
+                if (book.Rates.Any()) _context.Rates.RemoveRange(book.Rates);
+                if (book.CartDetails.Any()) _context.CartDetails.RemoveRange(book.CartDetails);
+                if (book.SalesDetails.Any()) _context.SalesDetails.RemoveRange(book.SalesDetails);
+
+                _context.Books.Remove(book);
+                await _context.SaveChangesAsync();
+            }
             return RedirectToAction(nameof(Index));
         }
 
+        // Books with zero stock
         public async Task<IActionResult> RequiredBooks()
         {
             var requiredBooks = await _context.Books
@@ -179,6 +204,7 @@ namespace OBSS.Controllers
             return View(requiredBooks);
         }
 
+        // Download report for required books
         public async Task<IActionResult> DownloadRequiredBooksReport()
         {
             var requiredBooks = await _context.Books
@@ -188,7 +214,6 @@ namespace OBSS.Controllers
 
             var sb = new StringBuilder();
             sb.AppendLine("BookId,Title,Author,Category,Quantity");
-
             foreach (var book in requiredBooks)
             {
                 sb.AppendLine($"{book.BookId},\"{book.BookTitle}\",\"{book.Author}\",{book.Category?.CategoryDesc},0");
@@ -197,7 +222,6 @@ namespace OBSS.Controllers
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "RequiredBooksReport.csv");
         }
-
 
         private bool BookExists(int id)
         {

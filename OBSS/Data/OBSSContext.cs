@@ -41,40 +41,70 @@ public partial class OBSSContext : DbContext
             entity.HasKey(e => e.BookId).HasName("PK__Books__3DE0C207A3C389A9");
 
             entity.HasIndex(e => e.Author, "IX_Books_Author");
-
             entity.HasIndex(e => e.CategoryId, "IX_Books_CategoryId");
-
             entity.HasIndex(e => e.Subject, "IX_Books_Subject");
-
             entity.HasIndex(e => e.BookTitle, "IX_Books_Title");
 
-            entity.HasIndex(e => new { e.BookTitle, e.Author, e.PublishingHouse }, "UQ_Books").IsUnique();
+            entity.HasIndex(e => new { e.BookTitle, e.Author, e.PublishingHouse }, "UQ_Books")
+                .IsUnique();
 
             entity.Property(e => e.Author)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
             entity.Property(e => e.BookTitle)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
             entity.Property(e => e.CoverImageUrl)
                 .HasMaxLength(250)
                 .IsUnicode(false);
+
             entity.Property(e => e.Description)
                 .HasMaxLength(500)
                 .IsUnicode(false);
-            entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
+
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(10, 2)");
+
             entity.Property(e => e.PublishingHouse)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
             entity.Property(e => e.Subject)
                 .HasMaxLength(250)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.Category).WithMany(p => p.Books)
+            // ✅ Category → Books (Cascade Delete)
+            entity.HasOne(d => d.Category)
+                .WithMany(p => p.Books)
                 .HasForeignKey(d => d.CategoryId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Books__CategoryI__5812160E");
+
+            // ✅ Book → SalesDetails (Cascade Delete)
+            entity.HasMany(d => d.SalesDetails)
+                .WithOne(p => p.Book)
+                .HasForeignKey(p => p.BookId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__SalesDetails__BookId");
+
+            // ✅ Book → Rates (Cascade Delete)
+            entity.HasMany(d => d.Rates)
+                .WithOne(p => p.Book)
+                .HasForeignKey(p => p.BookId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Rates__BookId");
+
+            // ✅ Book → CartDetails (Cascade Delete)
+            entity.HasMany(d => d.CartDetails)
+                .WithOne(p => p.Book)
+                .HasForeignKey(p => p.BookId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__CartDetails__BookId");
         });
+
+
 
         modelBuilder.Entity<Cart>(entity =>
         {
@@ -82,11 +112,21 @@ public partial class OBSSContext : DbContext
 
             entity.ToTable("Cart");
 
-            entity.HasOne(d => d.User).WithMany(p => p.Carts)
+            // ✅ User → Cart (cascade delete)
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.Carts)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK__Cart__UserId__619B8048");
+
+            // ✅ Cart → CartDetails (cascade delete)
+            entity.HasMany(d => d.CartDetails)
+                .WithOne(p => p.Cart)
+                .HasForeignKey(p => p.CartId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__CartDetails__CartId");
         });
+
 
         modelBuilder.Entity<CartDetail>(entity =>
         {
@@ -106,12 +146,21 @@ public partial class OBSSContext : DbContext
         {
             entity.HasKey(e => e.CategoryId).HasName("PK__Categori__19093A0BC79E268A");
 
-            entity.HasIndex(e => e.CategoryDesc, "UQ__Categori__9D2327C6134478E5").IsUnique();
+            entity.HasIndex(e => e.CategoryDesc, "UQ__Categori__9D2327C6134478E5")
+                .IsUnique();
 
             entity.Property(e => e.CategoryDesc)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
+            // ✅ Category → Books (cascade delete)
+            entity.HasMany(d => d.Books)
+                .WithOne(p => p.Category)
+                .HasForeignKey(p => p.CategoryId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Books__CategoryId");
         });
+
 
         modelBuilder.Entity<Gender>(entity =>
         {
@@ -121,7 +170,15 @@ public partial class OBSSContext : DbContext
             entity.Property(e => e.GenderDesc)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
+            // ✅ Gender → Users (1:N cascade)
+            entity.HasMany(d => d.Users)
+                .WithOne(p => p.Gender)
+                .HasForeignKey(p => p.GenderId)
+                .OnDelete(DeleteBehavior.Cascade) // deleting a Gender deletes its Users
+                .HasConstraintName("FK__Users__GenderId__5165187F");
         });
+
 
         modelBuilder.Entity<Rate>(entity =>
         {
@@ -144,11 +201,21 @@ public partial class OBSSContext : DbContext
         {
             entity.HasKey(e => e.SaleId).HasName("PK__Sales__1EE3C3FF18E58646");
 
-            entity.HasOne(d => d.User).WithMany(p => p.Sales)
+            // ✅ Sale → User (a User can have many Sales)
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.Sales)
                 .HasForeignKey(d => d.UserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
+                .OnDelete(DeleteBehavior.Cascade) // delete all Sales when User is deleted
                 .HasConstraintName("FK__Sales__UserId__693CA210");
+
+            // ✅ Sale → SalesDetails (a Sale can have many SalesDetails)
+            entity.HasMany(d => d.SalesDetails)
+                .WithOne(p => p.Sale)
+                .HasForeignKey(p => p.SaleId)
+                .OnDelete(DeleteBehavior.Cascade) // delete all SalesDetails when Sale is deleted
+                .HasConstraintName("FK__SalesDetails__SaleId");
         });
+
 
         modelBuilder.Entity<SalesDetail>(entity =>
         {
@@ -171,38 +238,68 @@ public partial class OBSSContext : DbContext
             entity.HasKey(e => e.UserId).HasName("PK__Users__1788CC4C79AD15C7");
 
             entity.HasIndex(e => e.Email, "UQ__Users__A9D1053417EDEF4C").IsUnique();
-
             entity.HasIndex(e => e.UserName, "UQ__Users__C9F284561B947A5D").IsUnique();
 
             entity.Property(e => e.ContactNumber)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
             entity.Property(e => e.Email)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
             entity.Property(e => e.FirstName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
             entity.Property(e => e.LastName)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
             entity.Property(e => e.Password)
                 .HasMaxLength(20)
                 .IsUnicode(false);
+
             entity.Property(e => e.UserName)
                 .HasMaxLength(20)
                 .IsUnicode(false);
 
-            entity.HasOne(d => d.Gender).WithMany(p => p.Users)
+            // ✅ Gender → Users
+            entity.HasOne(d => d.Gender)
+                .WithMany(p => p.Users)
                 .HasForeignKey(d => d.GenderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Users__GenderId__5165187F");
 
-            entity.HasOne(d => d.UserTypeNavigation).WithMany(p => p.Users)
+            // ✅ UserType → Users
+            entity.HasOne(d => d.UserTypeNavigation)
+                .WithMany(p => p.Users)
                 .HasForeignKey(d => d.UserType)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Users__UserType__5070F446");
+
+            // ✅ User → Sales (cascade delete)
+            entity.HasMany(d => d.Sales)
+                .WithOne(p => p.User)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Sales__UserId");
+
+            // ✅ User → Rates (cascade delete)
+            entity.HasMany(d => d.Rates)
+                .WithOne(p => p.User)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Rates__UserId");
+
+            // ✅ User → Carts (cascade delete)
+            entity.HasMany(d => d.Carts)
+                .WithOne(p => p.User)
+                .HasForeignKey(p => p.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK__Carts__UserId");
         });
+
 
         modelBuilder.Entity<UserType>(entity =>
         {
@@ -212,7 +309,15 @@ public partial class OBSSContext : DbContext
             entity.Property(e => e.TypeDesc)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+
+            // ✅ UserType → Users (1:N cascade)
+            entity.HasMany(d => d.Users)
+                .WithOne(p => p.UserTypeNavigation)
+                .HasForeignKey(p => p.UserType)
+                .OnDelete(DeleteBehavior.Cascade) // deleting a UserType deletes its Users
+                .HasConstraintName("FK__Users__UserType__5070F446");
         });
+
 
         modelBuilder.Entity<vw_BookRating>(entity =>
         {

@@ -34,9 +34,7 @@ namespace OBSS.Controllers
             if (id == null)
                 return NotFound();
 
-            var cart = await _context.Carts
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.CartId == id);
+            var cart = await _context.Carts.Include(c => c.User).FirstOrDefaultAsync(m => m.CartId == id);
 
             if (cart == null)
                 return NotFound();
@@ -109,9 +107,7 @@ namespace OBSS.Controllers
             if (id == null)
                 return NotFound();
 
-            var cart = await _context.Carts
-                .Include(c => c.User)
-                .FirstOrDefaultAsync(m => m.CartId == id);
+            var cart = await _context.Carts.Include(c => c.User).FirstOrDefaultAsync(m => m.CartId == id);
 
             if (cart == null)
                 return NotFound();
@@ -149,31 +145,54 @@ namespace OBSS.Controllers
             if (!int.TryParse(userIdString, out int userId))
                 return Unauthorized();
 
-            var cart = await _context.Carts
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)
                 return View(new List<CartDetail>());
 
             var cartDetails = await _context.CartDetails
                 .Include(cd => cd.Book)
-                    .ThenInclude(b => b.Category)
+                .ThenInclude(b => b.Category)
                 .Where(cd => cd.CartId == cart.CartId)
                 .ToListAsync();
-            var expiredItems = cartDetails
-                .Where(cd => cd.AddedDate < DateTime.Now.AddMinutes(-1)) // ✅ expire after 1 minute
-                .ToList();
+
+            // ✅ Expire items older than 1 minute
+            var expiredItems = cartDetails.Where(cd => cd.AddedDate < DateTime.Now.AddMinutes(-1)).ToList();
             if (expiredItems.Any())
             {
-                _context.CartDetails.RemoveRange(expiredItems); // like pressing Remove
+                _context.CartDetails.RemoveRange(expiredItems);
                 await _context.SaveChangesAsync();
 
                 TempData["Info"] = $"{expiredItems.Count} item(s) were automatically removed because they were older than 1 minute.";
                 cartDetails = cartDetails.Except(expiredItems).ToList();
             }
 
+            // ✅ Stock check: remove or adjust items exceeding available quantity
+            var outOfStockItems = cartDetails.Where(cd => cd.Book.QuantityInStore <= 0).ToList();
+            if (outOfStockItems.Any())
+            {
+                _context.CartDetails.RemoveRange(outOfStockItems);
+                await _context.SaveChangesAsync();
+
+                TempData["Error"] = $"{outOfStockItems.Count} item(s) were removed because they are out of stock.";
+                cartDetails = cartDetails.Except(outOfStockItems).ToList();
+            }
+
+            var adjustedItems = cartDetails.Where(cd => cd.Quantity > cd.Book.QuantityInStore).ToList();
+            if (adjustedItems.Any())
+            {
+                foreach (var item in adjustedItems)
+                {
+                    item.Quantity = item.Book.QuantityInStore;
+                }
+                await _context.SaveChangesAsync();
+
+                TempData["Info"] = $"{adjustedItems.Count} item(s) were adjusted to match available stock.";
+            }
+
             return View(cartDetails);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -182,6 +201,13 @@ namespace OBSS.Controllers
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(userIdString, out int userId))
                 return Unauthorized();
+
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null || book.QuantityInStore <= 0)
+            {
+                TempData["Error"] = "This book is out of stock.";
+                return RedirectToAction(nameof(MyCart));
+            }
 
             var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
             if (cart == null)
@@ -210,12 +236,20 @@ namespace OBSS.Controllers
             }
             else
             {
-                existingItem.Quantity++;
+                if (existingItem.Quantity < book.QuantityInStore) // ✅ stock check
+                {
+                    existingItem.Quantity++;
+                }
+                else
+                {
+                    TempData["Error"] = "You cannot add more than the available stock.";
+                }
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(MyCart));
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -228,8 +262,7 @@ namespace OBSS.Controllers
             var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
             if (cart == null) return RedirectToAction(nameof(MyCart));
 
-            var item = await _context.CartDetails
-                .FirstOrDefaultAsync(cd => cd.CartId == cart.CartId && cd.BookId == bookId);
+            var item = await _context.CartDetails.FirstOrDefaultAsync(cd => cd.CartId == cart.CartId && cd.BookId == bookId);
 
             if (item != null)
             {
@@ -259,7 +292,18 @@ namespace OBSS.Controllers
                 return RedirectToAction(nameof(MyCart));
             }
 
-            // Create sale record
+            // ✅ Stock validation before purchase
+            var invalidItems = cart.CartDetails
+                .Where(cd => cd.Book.QuantityInStore <= 0 || cd.Quantity > cd.Book.QuantityInStore)
+                .ToList();
+
+            if (invalidItems.Any())
+            {
+                TempData["Error"] = "Some items in your cart are no longer available in the desired quantity.";
+                return RedirectToAction(nameof(MyCart));
+            }
+
+            // ✅ Continue purchase if all valid
             var sale = new Sale
             {
                 UserId = userId,
@@ -268,7 +312,6 @@ namespace OBSS.Controllers
             _context.Sales.Add(sale);
             await _context.SaveChangesAsync();
 
-            // Process each item
             foreach (var cartItem in cart.CartDetails)
             {
                 if (cartItem.Book != null)
@@ -287,7 +330,6 @@ namespace OBSS.Controllers
                 });
             }
 
-            // Clear cart
             _context.CartDetails.RemoveRange(cart.CartDetails);
             await _context.SaveChangesAsync();
 
@@ -303,14 +345,11 @@ namespace OBSS.Controllers
             if (!int.TryParse(userIdString, out int userId))
                 return Json(new { success = false });
 
-            var cart = await _context.Carts
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId);
             if (cart == null)
                 return Json(new { success = false });
 
-            var item = await _context.CartDetails
-                .Include(cd => cd.Book)
-                .FirstOrDefaultAsync(cd => cd.CartId == cart.CartId && cd.BookId == bookId);
+            var item = await _context.CartDetails.Include(cd => cd.Book).FirstOrDefaultAsync(cd => cd.CartId == cart.CartId && cd.BookId == bookId);
 
             if (item == null)
                 return Json(new { success = false });

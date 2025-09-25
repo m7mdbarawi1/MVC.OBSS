@@ -36,9 +36,8 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var sale = await _context.Sales
-                .Include(s => s.User)
-                .FirstOrDefaultAsync(m => m.SaleId == id);
+            var sale = await _context.Sales.Include(s => s.User).FirstOrDefaultAsync(m => m.SaleId == id);
+            
             if (sale == null)
             {
                 return NotFound();
@@ -132,9 +131,7 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var sale = await _context.Sales
-                .Include(s => s.User)
-                .FirstOrDefaultAsync(m => m.SaleId == id);
+            var sale = await _context.Sales.Include(s => s.User).FirstOrDefaultAsync(m => m.SaleId == id);
             if (sale == null)
             {
                 return NotFound();
@@ -161,9 +158,7 @@ namespace OBSS.Controllers
 
 public async Task<IActionResult> DownloadReport()
     {
-        var sales = await _context.Sales
-            .Include(s => s.User)
-            .ToListAsync();
+        var sales = await _context.Sales.Include(s => s.User).ToListAsync();
 
         var sb = new StringBuilder();
         sb.AppendLine("SaleId,UserId,SaleDate");

@@ -1,6 +1,9 @@
 ﻿@model IEnumerable<OBSS.Models.Book>
 @using System.Security.Claims
 
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
 @{
     ViewData["Title"] = "Available Books";
 
@@ -15,7 +18,7 @@
     }
 }
 <link href="~/css/home/index.css" rel="stylesheet" />
-
+<h1>@Localizer["Welcome"]</h1>
 <div class="container page-wrapper mt-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -62,7 +65,6 @@
         </div>
     </div>
 
-    <!-- Books Grid -->
     <!-- Books Grid -->
     <div class="row" id="booksGrid">
         @foreach (var book in Model)

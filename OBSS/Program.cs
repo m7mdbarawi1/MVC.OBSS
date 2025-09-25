@@ -11,7 +11,7 @@ builder.Services.AddDbContext<OBSSContext>(opt => opt.UseSqlServer(cs));
 // 2) Cookie Authentication (single scheme)
 builder.Services.AddAuthentication("OBSSAuth")
     .AddCookie("OBSSAuth", options =>
-    {
+    { 
         options.Cookie.Name = "OBSS.Auth";
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";

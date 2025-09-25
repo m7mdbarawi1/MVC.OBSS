@@ -16,16 +16,40 @@
     <div class="row justify-content-center">
         <div class="col-md-8 col-lg-7">
             <div class="card shadow-sm">
-                <div class="card-header">
-                    <h5 class="mb-0">Details</h5>
-                </div>
-                <div class="card-body">
-                    <dl class="row mb-0">
+                <div class="card-body text-center">
+
+                    <!-- Book Cover Image -->
+                    @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
+                    {
+                        <img src="@Model.CoverImageUrl" alt="Book Cover"
+                             class="img-fluid rounded shadow-sm mb-3 w-100"
+                             style="max-height: 400px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <span class="text-muted d-block mb-3">No image available</span>
+                    }
+
+                    <!-- Title, Category, Price, Add to Cart -->
+                    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-2">
+                        <div class="text-start">
+                            <h3 class="fw-bold mb-1">@Model.BookTitle</h3>
+                            <p class="mb-0 text-muted">Category: @Model.Category?.CategoryDesc</p>
+                            <p class="mb-0 fw-bold text-success">$@Model.Price</p>
+                        </div>
+                        <form asp-controller="Carts" asp-action="AddToCart" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="bookId" value="@Model.BookId" />
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-cart-plus"></i> Add to Cart
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Other Book Details -->
+                    <dl class="row text-start mb-0">
                         <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Subject)</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.Subject)</dd>
-
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.BookTitle)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.BookTitle)</dd>
 
                         <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Author)</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.Author)</dd>
@@ -39,44 +63,9 @@
                         <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.QuantityInStore)</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.QuantityInStore)</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.CoverImageUrl)</dt>
-                        <dd class="col-sm-8">
-                            @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
-                            {
-                                <img src="@Model.CoverImageUrl" alt="Book Cover" class="img-fluid rounded shadow-sm" style="max-width:200px;" />
-                            }
-                            else
-                            {
-                                <span class="text-muted">No image available</span>
-                            }
-                        </dd>
-
                         <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Description)</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.Description)</dd>
-
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Price)</dt>
-                        <dd class="col-sm-8">$@Html.DisplayFor(model => model.Price)</dd>
-
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Category)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Category.CategoryDesc)</dd>
                     </dl>
-                </div>
-                <div class="card-footer d-flex justify-content-end gap-2">
-                    <a asp-action="Edit" asp-route-id="@Model?.BookId" class="btn btn-secondary">
-                        <i class="bi bi-pencil-square"></i> Edit
-                    </a>
-                    <a asp-action="Index" class="btn btn-primary">
-                        <i class="bi bi-arrow-left-circle"></i> Back
-                    </a>
-
-                    <!-- Add to Cart -->
-                    <form asp-controller="Carts" asp-action="AddToCart" method="post" class="d-inline">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="bookId" value="@Model.BookId" />
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-cart-plus"></i> Add to Cart
-                        </button>
-                    </form>
                 </div>
             </div>
         </div>

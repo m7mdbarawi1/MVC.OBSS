@@ -34,7 +34,8 @@
 
                         <div class="mb-3">
                             <label asp-for="Rate1" class="form-label"></label>
-                            <input asp-for="Rate1" class="form-control" />
+                            <!-- Restricted input: only 1 to 5 allowed -->
+                            <input asp-for="Rate1" class="form-control" type="number" min="1" max="5" />
                             <span asp-validation-for="Rate1" class="text-danger"></span>
                         </div>
 
