@@ -77,10 +77,23 @@
                                 Language
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
-                                <li><a class="dropdown-item lang-option" data-lang="en" href="#">English</a></li>
-                                <li><a class="dropdown-item lang-option" data-lang="ar" href="#">العربية</a></li>
+                                <li>
+                                    <form asp-controller="Language" asp-action="SetLanguage" method="post" class="d-inline lang-form">
+                                        <input type="hidden" name="culture" value="en-US" />
+                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                        <button type="submit" class="dropdown-item" data-lang="en">English</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form asp-controller="Language" asp-action="SetLanguage" method="post" class="d-inline lang-form">
+                                        <input type="hidden" name="culture" value="ar-JO" />
+                                        <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
+                                        <button type="submit" class="dropdown-item" data-lang="ar">العربية</button>
+                                    </form>
+                                </li>
                             </ul>
                         </div>
+
 
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
@@ -216,35 +229,30 @@
 
     <script>
         // ✅ Language dropdown
-        document.addEventListener('DOMContentLoaded', function () {
+                document.addEventListener('DOMContentLoaded', function () {
             const rootEl = document.documentElement;
-            const langOptions = document.querySelectorAll('.lang-option');
+            const langButtons = document.querySelectorAll('.lang-form button');
 
             function setLanguage(lang) {
                 rootEl.setAttribute('lang', lang);
                 localStorage.setItem('lang', lang);
 
-                // RTL/LTR handling
-                if (lang === 'ar') {
-                    rootEl.setAttribute('dir', 'rtl');
-                } else {
-                    rootEl.setAttribute('dir', 'ltr');
-                }
+                // RTL/LTR
+                rootEl.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
             }
 
             // Initialize saved language
             const savedLang = localStorage.getItem('lang') || 'en';
             setLanguage(savedLang);
 
-            // Event listeners
-            langOptions.forEach(option => {
-                option.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const selectedLang = option.getAttribute('data-lang');
-                    setLanguage(selectedLang);
+            // Handle click for immediate UI change
+            langButtons.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const lang = btn.getAttribute('data-lang');
+                    setLanguage(lang);
+                    // form will submit normally to LanguageController
                 });
             });
-
         });
     </script>
 

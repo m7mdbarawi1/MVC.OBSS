@@ -1,21 +1,21 @@
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using OBSS.Data;
-
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 1) DbContext (reads "DefaultConnection" from appsettings.json)
-var cs = builder.Configuration.GetConnectionString("OBSS") ?? throw new InvalidOperationException("Connection string not found.");
+// 1) DbContext
+var cs = builder.Configuration.GetConnectionString("OBSS")
+    ?? throw new InvalidOperationException("Connection string not found.");
 builder.Services.AddDbContext<OBSSContext>(opt => opt.UseSqlServer(cs));
 
-// 2) Cookie Authentication (single scheme)
+// 2) Cookie Authentication
 builder.Services.AddAuthentication("OBSSAuth")
     .AddCookie("OBSSAuth", options =>
-    { 
+    {
         options.Cookie.Name = "OBSS.Auth";
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
@@ -30,27 +30,39 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllersWithViews()
     .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
-builder.Services.AddLocalization(options => 
+builder.Services.AddLocalization(options =>
 {
     options.ResourcesPath = "Resources";
-
 });
 
+// 3) Localization options
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var supportedCultures = new[] {
         new CultureInfo("en-US"),
         new CultureInfo("ar-JO")
     };
+
     options.DefaultRequestCulture = new RequestCulture("en-US");
+    options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
+
+    // ✅ allow switching via query string and cookie
+    options.RequestCultureProviders = new List<IRequestCultureProvider>
+    {
+        new QueryStringRequestCultureProvider(),
+        new CookieRequestCultureProvider()
+    };
 });
 
 var app = builder.Build();
 
-app.UseRequestLocalization();
+// Enable localization
+var locOptions = app.Services.GetRequiredService<
+    Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
+app.UseRequestLocalization(locOptions.Value);
 
-// 3) Pipeline
+// 4) Pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
