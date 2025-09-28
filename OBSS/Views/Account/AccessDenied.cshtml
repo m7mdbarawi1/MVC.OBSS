@@ -1,6 +1,8 @@
 ﻿@model ErrorViewModel
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = Localizer["Error"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
@@ -8,9 +10,9 @@
     <div class="row mb-4">
         <div class="col-12 text-center">
             <h1 class="page-title text-danger">
-                <i class="bi bi-exclamation-triangle-fill"></i> Error
+                <i class="bi bi-exclamation-triangle-fill"></i> @Localizer["Error"]
             </h1>
-            <h4 class="text-muted">An error occurred while processing your request.</h4>
+            <h4 class="text-muted">@Localizer["ErrorMessage"]</h4>
         </div>
     </div>
 
@@ -22,29 +24,25 @@
                     @if (Model.ShowRequestId)
                     {
                         <p>
-                            <strong>Request ID:</strong>
+                            <strong>@Localizer["RequestId"]:</strong>
                             <code>@Model.RequestId</code>
                         </p>
                     }
 
-                    <h5>Development Mode</h5>
+                    <h5>@Localizer["DevelopmentMode"]</h5>
                     <p>
-                        Swapping to <strong>Development</strong> environment will display more detailed
-                        information about the error that occurred.
+                        @Localizer["DevModeMessage"]
                     </p>
                     <p class="text-danger">
-                        <strong>Important:</strong> The Development environment shouldn't be enabled for
-                        deployed applications. It may expose sensitive information to end users.
+                        <strong>@Localizer["Important"]:</strong> @Localizer["ProdWarning"]
                     </p>
                     <p>
-                        For local debugging, enable the <strong>Development</strong> environment by setting
-                        the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to
-                        <strong>Development</strong> and restarting the app.
+                        @Localizer["EnableDevInstructions"]
                     </p>
                 </div>
                 <div class="card-footer text-end">
                     <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left-circle"></i> Back to Home
+                        <i class="bi bi-arrow-left-circle"></i> @Localizer["BackHome"]
                     </a>
                 </div>
             </div>

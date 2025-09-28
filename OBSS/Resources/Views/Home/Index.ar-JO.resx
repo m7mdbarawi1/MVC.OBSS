@@ -117,10 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Hello" xml:space="preserve">
-    <value>مرحبا</value>
+  <data name="AllCategories" xml:space="preserve">
+    <value>كل التصنيفات</value>
+  </data>
+  <data name="AllRatings" xml:space="preserve">
+    <value>كل التقييمات</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>المؤلف</value>
+  </data>
+  <data name="AvailableBooks" xml:space="preserve">
+    <value>الكتب المتاحة</value>
+  </data>
+  <data name="Average" xml:space="preserve">
+    <value>متوسط التقييم</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>التصنيف</value>
+  </data>
+  <data name="LoginToRate" xml:space="preserve">
+    <value>الرجاء تسجيل الدخول لتقييم الكتاب</value>
+  </data>
+  <data name="MaxPrice" xml:space="preserve">
+    <value>الحد الأعلى للسعر</value>
+  </data>
+  <data name="MinPrice" xml:space="preserve">
+    <value>الحد الأدنى للسعر</value>
+  </data>
+  <data name="NoImage" xml:space="preserve">
+    <value>لا توجد صورة</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>الكمية</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>ابحث بالعنوان، المؤلف أو الموضوع...</value>
   </data>
   <data name="Welcome" xml:space="preserve">
-    <value>اهلا</value>
+    <value>مرحباً</value>
   </data>
 </root>

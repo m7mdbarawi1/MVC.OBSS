@@ -1,14 +1,15 @@
 ﻿@model OBSS.Models.User
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Register";
+    ViewData["Title"] = Localizer["Register"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Create an Account</h1>
+            <h1 class="page-title">@Localizer["CreateAccount"]</h1>
         </div>
     </div>
 
@@ -21,57 +22,57 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="mb-3">
-                            <label asp-for="UserType" class="form-label"></label>
+                            <label asp-for="UserType" class="form-label">@Localizer["UserType"]</label>
                             <select asp-for="UserType" class="form-select"
                                     asp-items="@(new SelectList(ViewBag.UserTypes, "TypeId", "TypeDesc"))"></select>
                             <span asp-validation-for="UserType" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="UserName" class="form-label"></label>
+                            <label asp-for="UserName" class="form-label">@Localizer["Username"]</label>
                             <input asp-for="UserName" class="form-control" />
                             <span asp-validation-for="UserName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Password" class="form-label"></label>
+                            <label asp-for="Password" class="form-label">@Localizer["Password"]</label>
                             <input asp-for="Password" type="password" class="form-control" />
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="FirstName" class="form-label"></label>
+                            <label asp-for="FirstName" class="form-label">@Localizer["FirstName"]</label>
                             <input asp-for="FirstName" class="form-control" />
                             <span asp-validation-for="FirstName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="LastName" class="form-label"></label>
+                            <label asp-for="LastName" class="form-label">@Localizer["LastName"]</label>
                             <input asp-for="LastName" class="form-control" />
                             <span asp-validation-for="LastName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Birthdate" class="form-label"></label>
+                            <label asp-for="Birthdate" class="form-label">@Localizer["Birthdate"]</label>
                             <input asp-for="Birthdate" type="date" class="form-control" />
                             <span asp-validation-for="Birthdate" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="GenderId" class="form-label"></label>
+                            <label asp-for="GenderId" class="form-label">@Localizer["Gender"]</label>
                             <select asp-for="GenderId" class="form-select"
                                     asp-items="@(new SelectList(ViewBag.Genders, "GenderId", "GenderDesc"))"></select>
                             <span asp-validation-for="GenderId" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="ContactNumber" class="form-label"></label>
+                            <label asp-for="ContactNumber" class="form-label">@Localizer["ContactNumber"]</label>
                             <input asp-for="ContactNumber" class="form-control" />
                             <span asp-validation-for="ContactNumber" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
-                            <label asp-for="Email" class="form-label"></label>
+                            <label asp-for="Email" class="form-label">@Localizer["Email"]</label>
                             <input asp-for="Email" type="email" class="form-control" />
                             <span asp-validation-for="Email" class="text-danger"></span>
                         </div>
@@ -79,14 +80,14 @@
                         <!-- Register Button -->
                         <div class="d-grid mt-4">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-person-plus"></i> Register
+                                <i class="bi bi-person-plus"></i> @Localizer["Register"]
                             </button>
                         </div>
 
                         <!-- Login Link -->
                         <p class="text-center mt-3 mb-0">
-                            Already have an account?
-                            <a asp-controller="Account" asp-action="Login">Login here</a>.
+                            @Localizer["AlreadyHaveAccount"]
+                            <a asp-controller="Account" asp-action="Login">@Localizer["LoginHere"]</a>.
                         </p>
                     </form>
                 </div>

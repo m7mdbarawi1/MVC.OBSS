@@ -1,14 +1,15 @@
 ﻿@model OBSS.Models.SalesDetail
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Sales Detail Details";
+    ViewData["Title"] = Localizer["SalesDetailDetails"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Sales Detail Details</h1>
+            <h1 class="page-title">@Localizer["SalesDetailDetails"]</h1>
         </div>
     </div>
 
@@ -17,38 +18,42 @@
         <div class="col-md-8 col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-header">
-                    <h5 class="mb-0">Details</h5>
+                    <h5 class="mb-0">@Localizer["Details"]</h5>
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Quantity)</dt>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Quantity"]</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.Quantity)</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Price)</dt>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Price"]</dt>
                         <dd class="col-sm-8">$@Html.DisplayFor(model => model.Price)</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Book)</dt>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Book"]</dt>
                         <dd class="col-sm-8">
                             @Html.DisplayFor(model => model.Book.BookTitle)
-                            <span class="text-muted">(ID: @Html.DisplayFor(model => model.Book.BookId))</span>
+                            <span class="text-muted">(@Localizer["ID"]: @Html.DisplayFor(model => model.Book.BookId))</span>
                         </dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Sale)</dt>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Sale"]</dt>
                         <dd class="col-sm-8">
-                            Sale #@Html.DisplayFor(model => model.Sale.SaleId)
+                            @Localizer["Sale"] #@Html.DisplayFor(model => model.Sale.SaleId)
                             <span class="text-muted">(@Html.DisplayFor(model => model.Sale.SaleDate))</span>
                         </dd>
                     </dl>
                 </div>
                 <div class="card-footer d-flex justify-content-end gap-2">
                     <a asp-action="Edit" asp-route-saleId="@Model?.SaleId" asp-route-detailId="@Model?.DetailId" class="btn btn-secondary">
-                        <i class="bi bi-pencil-square"></i> Edit
+                        <i class="bi bi-pencil-square"></i> @Localizer["Edit"]
                     </a>
                     <a asp-action="Index" class="btn btn-primary">
-                        <i class="bi bi-arrow-left-circle"></i> Back
+                        <i class="bi bi-arrow-left-circle"></i> @Localizer["Back"]
                     </a>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

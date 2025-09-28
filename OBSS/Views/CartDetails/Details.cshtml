@@ -1,14 +1,15 @@
 ﻿@model OBSS.Models.CartDetail
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Cart Detail";
+    ViewData["Title"] = Localizer["CartDetail"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Cart Detail</h1>
+            <h1 class="page-title">@Localizer["CartDetail"]</h1>
         </div>
     </div>
 
@@ -17,18 +18,18 @@
         <div class="col-md-6 col-lg-5">
             <div class="card shadow-sm">
                 <div class="card-header">
-                    <h5 class="mb-0">Details</h5>
+                    <h5 class="mb-0">@Localizer["Details"]</h5>
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Quantity)</dt>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Quantity"]</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.Quantity)</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Book)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Book.BookId)</dd>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Book"]</dt>
+                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Book.BookTitle)</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Cart)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Cart.CartId)</dd>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Cart"]</dt>
+                        <dd class="col-sm-8">#@Model.Cart.CartId</dd>
                     </dl>
                 </div>
                 <div class="card-footer d-flex justify-content-end gap-2">
@@ -36,10 +37,10 @@
                        asp-route-cartId="@Model.CartId"
                        asp-route-bookId="@Model.BookId"
                        class="btn btn-secondary">
-                        <i class="bi bi-pencil-square"></i> Edit
+                        <i class="bi bi-pencil-square"></i> @Localizer["Edit"]
                     </a>
                     <a asp-action="Index" class="btn btn-primary">
-                        <i class="bi bi-arrow-left-circle"></i> Back
+                        <i class="bi bi-arrow-left-circle"></i> @Localizer["Back"]
                     </a>
                 </div>
             </div>

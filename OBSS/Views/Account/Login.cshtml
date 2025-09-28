@@ -1,12 +1,14 @@
-﻿@{
-    ViewData["Title"] = "Login";
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["Login"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Login</h1>
+            <h1 class="page-title">@Localizer["Login"]</h1>
         </div>
     </div>
 
@@ -17,13 +19,13 @@
                 <div class="card-body">
                     <form method="post" asp-controller="Account" asp-action="Login">
                         <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input id="username" name="username" type="text" class="form-control" placeholder="Enter your username" required />
+                            <label for="username" class="form-label">@Localizer["Username"]</label>
+                            <input id="username" name="username" type="text" class="form-control" placeholder="@Localizer["EnterUsername"]" required />
                         </div>
 
                         <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input id="password" name="password" type="password" class="form-control" placeholder="Enter your password" required />
+                            <label for="password" class="form-label">@Localizer["Password"]</label>
+                            <input id="password" name="password" type="password" class="form-control" placeholder="@Localizer["EnterPassword"]" required />
                         </div>
 
                         @if (ViewBag.Error != null)
@@ -34,14 +36,14 @@
                         <!-- Login Button -->
                         <div class="d-grid mt-3">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-box-arrow-in-right"></i> Login
+                                <i class="bi bi-box-arrow-in-right"></i> @Localizer["Login"]
                             </button>
                         </div>
 
                         <!-- Register Link -->
                         <p class="text-center mt-3 mb-0">
-                            Don’t have an account?
-                            <a asp-controller="Account" asp-action="Register">Register here</a>.
+                            @Localizer["NoAccount"]
+                            <a asp-controller="Account" asp-action="Register">@Localizer["RegisterHere"]</a>.
                         </p>
                     </form>
                 </div>

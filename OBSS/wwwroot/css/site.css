@@ -41,7 +41,9 @@ body {
     background-color: var(--primary-blue) !important;
 }
 
+/* Navbar text size fix */
 .navbar .nav-link {
+    font-size: 0.9rem; /* smaller than default */
     color: #fff !important;
 }
 
@@ -49,6 +51,7 @@ body {
     .navbar .dropdown-toggle:hover {
         color: var(--accent-yellow) !important;
     }
+
 
 /* ============================
    Dropdown
@@ -59,6 +62,10 @@ body {
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     z-index: 2000;
 }
+
+    .dropdown-menu .dropdown-item {
+        font-size: 0.9rem;
+    }
 
 .dropdown-menu-responsive {
     max-width: 90vw;

@@ -1,16 +1,17 @@
 ﻿@model IEnumerable<OBSS.Models.Gender>
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Genders";
+    ViewData["Title"] = Localizer["GendersTitle"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-            <h1 class="page-title mb-3 mb-md-0">@ViewData["Title"]</h1>
+            <h1 class="page-title mb-3 mb-md-0">@Localizer["GendersTitle"]</h1>
             <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> Create New
+                <i class="bi bi-plus-circle"></i> @Localizer["CreateNew"]
             </a>
         </div>
     </div>
@@ -20,7 +21,7 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search genders...">
+                    <input type="text" id="searchInput" class="form-control" placeholder="@Localizer["SearchGenders"]">
                 </div>
             </div>
         </div>
@@ -35,8 +36,8 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th>@Html.DisplayNameFor(model => model.GenderDesc)</th>
-                                    <th class="text-center">Actions</th>
+                                    <th>@Localizer["GenderDesc"]</th>
+                                    <th class="text-center">@Localizer["Actions"]</th>
                                 </tr>
                             </thead>
                             <tbody id="gendersTable">
@@ -49,13 +50,13 @@
                                             <td class="text-center">
                                                 <div class="d-flex flex-wrap justify-content-center gap-2">
                                                     <a asp-action="Edit" asp-route-id="@item.GenderId" class="btn btn-secondary btn-sm">
-                                                        <i class="bi bi-pencil-square"></i> Edit
+                                                        <i class="bi bi-pencil-square"></i> @Localizer["Edit"]
                                                     </a>
                                                     <a asp-action="Details" asp-route-id="@item.GenderId" class="btn btn-accent btn-sm">
-                                                        <i class="bi bi-info-circle"></i> Details
+                                                        <i class="bi bi-info-circle"></i> @Localizer["Details"]
                                                     </a>
                                                     <a asp-action="Delete" asp-route-id="@item.GenderId" class="btn btn-danger btn-sm">
-                                                        <i class="bi bi-trash"></i> Delete
+                                                        <i class="bi bi-trash"></i> @Localizer["Delete"]
                                                     </a>
                                                 </div>
                                             </td>
@@ -65,7 +66,7 @@
                                 else
                                 {
                                     <tr>
-                                        <td colspan="2" class="text-center text-muted">No genders found.</td>
+                                        <td colspan="2" class="text-center text-muted">@Localizer["NoGendersFound"]</td>
                                     </tr>
                                 }
                             </tbody>

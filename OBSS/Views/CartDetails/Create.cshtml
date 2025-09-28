@@ -1,14 +1,15 @@
 ﻿@model OBSS.Models.CartDetail
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Create Cart Detail";
+    ViewData["Title"] = Localizer["CreateCartDetail"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Create Cart Detail</h1>
+            <h1 class="page-title">@Localizer["CreateCartDetail"]</h1>
         </div>
     </div>
 
@@ -34,17 +35,17 @@
 
                         <div class="mb-3">
                             <label asp-for="Quantity" class="form-label"></label>
-                            <input asp-for="Quantity" class="form-control" type="number" />
+                            <input asp-for="Quantity" type="number" class="form-control" />
                             <span asp-validation-for="Quantity" class="text-danger"></span>
                         </div>
 
                         <!-- Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-plus-circle"></i> Create
+                                <i class="bi bi-plus-circle"></i> @Localizer["Create"]
                             </button>
                             <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left-circle"></i> Cancel
+                                <i class="bi bi-arrow-left-circle"></i> @Localizer["Cancel"]
                             </a>
                         </div>
                     </form>

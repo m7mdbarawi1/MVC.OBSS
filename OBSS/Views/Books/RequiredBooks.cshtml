@@ -1,16 +1,17 @@
 ﻿@model IEnumerable<OBSS.Models.Book>
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Required Books";
+    ViewData["Title"] = Localizer["RequiredBooks"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-            <h1 class="page-title mb-3 mb-md-0">@ViewData["Title"] (Out of Stock)</h1>
+            <h1 class="page-title mb-3 mb-md-0">@Localizer["RequiredBooks"] (@Localizer["OutOfStock"])</h1>
             <a asp-action="DownloadRequiredBooksReport" class="btn btn-primary">
-                <i class="bi bi-download"></i> Download Report
+                <i class="bi bi-download"></i> @Localizer["DownloadReport"]
             </a>
         </div>
     </div>
@@ -24,11 +25,11 @@
                         <table class="table table-hover align-middle mb-0">
                             <thead>
                                 <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>Category</th>
-                                    <th>Quantity</th>
-                                    <th class="text-center">Actions</th>
+                                    <th>@Localizer["Title"]</th>
+                                    <th>@Localizer["Author"]</th>
+                                    <th>@Localizer["Category"]</th>
+                                    <th>@Localizer["Quantity"]</th>
+                                    <th class="text-center">@Localizer["Actions"]</th>
                                 </tr>
                             </thead>
                             <tbody id="requiredBooksTable">
@@ -40,14 +41,14 @@
                                             <td>@book.BookTitle</td>
                                             <td>@book.Author</td>
                                             <td>@book.Category?.CategoryDesc</td>
-                                            <td>0 (Out of Stock)</td> <!-- ✅ plain text only -->
+                                            <td>0 (@Localizer["OutOfStock"])</td>
                                             <td class="text-center">
                                                 <div class="d-flex flex-wrap justify-content-center gap-2">
                                                     <a asp-action="Edit" asp-route-id="@book.BookId" class="btn btn-secondary btn-sm">
-                                                        <i class="bi bi-pencil-square"></i> Update
+                                                        <i class="bi bi-pencil-square"></i> @Localizer["Update"]
                                                     </a>
                                                     <a asp-action="Details" asp-route-id="@book.BookId" class="btn btn-accent btn-sm">
-                                                        <i class="bi bi-info-circle"></i> Details
+                                                        <i class="bi bi-info-circle"></i> @Localizer["Details"]
                                                     </a>
                                                 </div>
                                             </td>
@@ -58,7 +59,7 @@
                                 {
                                     <tr>
                                         <td colspan="5" class="text-center text-muted py-3">
-                                            No required books (all in stock).
+                                            @Localizer["NoRequiredBooks"]
                                         </td>
                                     </tr>
                                 }

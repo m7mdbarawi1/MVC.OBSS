@@ -1,39 +1,54 @@
-﻿    @model OBSS.Models.Cart
+﻿@model OBSS.Models.Cart
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
-    @{
-        ViewData["Title"] = "Edit";
-    }
+@{
+    ViewData["Title"] = Localizer["EditCart"];
+}
 
-    <h1>Edit</h1>
-
-    <h4>Cart</h4>
-    <hr />
-    <div class="row">
-        <div class="col-md-4">
-            <form asp-action="Edit">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <input type="hidden" asp-for="CartId" />
-                <div class="form-group">
-                    <label asp-for="UserId" class="control-label"></label>
-                    <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
-                    <span asp-validation-for="UserId" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="CreationDate" class="control-label"></label>
-                    <input asp-for="CreationDate" class="form-control" />
-                    <span asp-validation-for="CreationDate" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
-                </div>
-            </form>
+<div class="container-fluid page-wrapper mt-4">
+    <div class="row mb-4">
+        <div class="col-12 text-center">
+            <h1 class="page-title">@Localizer["EditCart"]</h1>
         </div>
     </div>
 
-    <div>
-        <a asp-action="Index">Back to List</a>
-    </div>
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="CartId" />
 
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+                        <div class="mb-3">
+                            <label asp-for="UserId" class="form-label">@Localizer["User"]</label>
+                            <select asp-for="UserId" class="form-control" asp-items="ViewBag.UserId"></select>
+                            <span asp-validation-for="UserId" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="CreationDate" class="form-label">@Localizer["CreationDate"]</label>
+                            <input asp-for="CreationDate" class="form-control" />
+                            <span asp-validation-for="CreationDate" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 mt-3">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle"></i> @Localizer["Save"]
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left-circle"></i> @Localizer["BackToList"]
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+}

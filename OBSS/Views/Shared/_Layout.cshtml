@@ -2,9 +2,16 @@
 @using Microsoft.EntityFrameworkCore
 @using OBSS.Data
 @inject OBSSContext _context
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
+@{
+    // Get current culture from server
+    var currentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture.Name;
+    var dir = currentCulture.StartsWith("ar") ? "rtl" : "ltr";
+}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@currentCulture" dir="@dir">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,7 +23,7 @@
 </head>
 <body class="d-flex flex-column min-vh-100">
     <!-- Skip to content -->
-    <a href="#main-content" class="visually-hidden-focusable">Skip to content</a>
+    <a href="#main-content" class="visually-hidden-focusable">@Localizer["SkipToContent"]</a>
 
     <!-- Navbar -->
     <header>
@@ -39,26 +46,26 @@
                         {
                             <!-- Home (role-based redirect) -->
                             <a class="nav-link text-white fw-bold" asp-controller="Account" asp-action="HomeRedirect">
-                                Home
+                                @Localizer["Home"]
                             </a>
-                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">Explore Books</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">@Localizer["ExploreBooks"]</a></li>
 
                             @if (User.IsInRole("Admin"))
                             {
-                                        <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">Books</a></li>
-                                        <li class="nav-item"><a class="nav-link" asp-controller="Categories" asp-action="Index">Categories</a></li>
-                                        <li class="nav-item"><a class="nav-link" asp-controller="Rates" asp-action="Index">Rates</a></li>
-                                        <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="Index">Carts</a></li>
-                                        <li class="nav-item"><a class="nav-link" asp-controller="CartDetails" asp-action="Index">Cart Details</a></li>
-                                        <li class="nav-item"><a class="nav-link" asp-controller="Sales" asp-action="Index">Sales</a></li>
-                                        <li class="nav-item"><a class="nav-link" asp-controller="SalesDetails" asp-action="Index">Sales Details</a></li>
-                                        <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">Users</a></li>
-                                        <li class="nav-item"><a class="nav-link" asp-controller="UserTypes" asp-action="Index">User Types</a></li>
-                                        <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="RequiredBooks">Required Books</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">@Localizer["Books"]</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Categories" asp-action="Index">@Localizer["Categories"]</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Rates" asp-action="Index">@Localizer["Rates"]</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="Index">@Localizer["Carts"]</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="CartDetails" asp-action="Index">@Localizer["CartDetails"]</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Sales" asp-action="Index">@Localizer["Sales"]</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="SalesDetails" asp-action="Index">@Localizer["SalesDetails"]</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Users" asp-action="Index">@Localizer["Users"]</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="UserTypes" asp-action="Index">@Localizer["UserTypes"]</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="RequiredBooks">@Localizer["RequiredBooks"]</a></li>
                             }
                             else if (User.IsInRole("Customer"))
                             {
-                                        <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="MyCart">My Cart</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="MyCart">@Localizer["MyCart"]</a></li>
                             }
                         }
                     </ul>
@@ -74,55 +81,54 @@
                         <div class="dropdown">
                             <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" id="languageDropdown"
                                     data-bs-toggle="dropdown" aria-expanded="false">
-                                Language
+                                @Localizer["Language"]
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="languageDropdown">
                                 <li>
                                     <form asp-controller="Language" asp-action="SetLanguage" method="post" class="d-inline lang-form">
                                         <input type="hidden" name="culture" value="en-US" />
                                         <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                        <button type="submit" class="dropdown-item" data-lang="en">English</button>
+                                        <button type="submit" class="dropdown-item">@Localizer["English"]</button>
                                     </form>
                                 </li>
                                 <li>
                                     <form asp-controller="Language" asp-action="SetLanguage" method="post" class="d-inline lang-form">
                                         <input type="hidden" name="culture" value="ar-JO" />
                                         <input type="hidden" name="returnUrl" value="@Context.Request.Path" />
-                                        <button type="submit" class="dropdown-item" data-lang="ar">العربية</button>
+                                        <button type="submit" class="dropdown-item">@Localizer["Arabic"]</button>
                                     </form>
                                 </li>
                             </ul>
                         </div>
 
-
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                                <!-- User Dropdown -->
-                                <div class="dropdown">
-                                    <a class="btn btn-outline-light btn-sm dropdown-toggle w-100 text-truncate"
-                                       href="#" id="userDropdown" role="button"
-                                       data-bs-toggle="dropdown" aria-expanded="false">
+                            <!-- User Dropdown -->
+                            <div class="dropdown">
+                                <a class="btn btn-outline-light btn-sm dropdown-toggle w-100 text-truncate"
+                                   href="#" id="userDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
                                     @User.Identity!.Name
-                                        <small class="d-none d-md-inline">(@User.FindFirst(ClaimTypes.Role)?.Value)</small>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-responsive"
-                                        aria-labelledby="userDropdown">
-                                        <li>
-                                            <a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">My Profile</a>
-                                        </li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li>
-                                            <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
+                                    <small class="d-none d-md-inline">(@User.FindFirst(ClaimTypes.Role)?.Value)</small>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-responsive"
+                                    aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="MyProfile">@Localizer["MyProfile"]</a>
+                                    </li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Account" asp-action="Logout" method="post" class="px-3">
                                             @Html.AntiForgeryToken()
-                                                <button type="submit" class="btn btn-sm btn-danger w-100">Logout</button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
+                                            <button type="submit" class="btn btn-sm btn-danger w-100">@Localizer["Logout"]</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
                         }
                         else
                         {
-                                <a asp-controller="Account" asp-action="Login" class="btn btn-accent btn-sm">Login</a>
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-accent btn-sm">@Localizer["Login"]</a>
                         }
                     </div>
                 </div>
@@ -138,47 +144,48 @@
             </div>
         </div>
     </main>
-    <footer class="footer-custom mt-auto pt-5 pb-3">
+    <footer class="footer-custom mt-auto pt-5 pb-3 bg-light">
         <div class="container">
             <div class="row g-4 justify-content-center text-center">
                 <!-- Get in Touch -->
-                <div class="col-md-4">
-                    <h5 class="fw-bold">Get in Touch</h5>
+                <div class="col-md-4 d-flex flex-column align-items-center">
+                    <h5 class="fw-bold">@Localizer["GetInTouch"]</h5>
                     <form class="d-flex flex-column gap-2 mt-3 align-items-center">
-                        <input type="email" class="form-control text-center" placeholder="Your email" required
+                        <input type="email" class="form-control text-center" placeholder="@Localizer["YourEmail"]" required
                                style="max-width: 250px;" />
-                        <button type="submit" class="btn btn-accent btn-sm">Send</button>
+                        <button type="submit" class="btn btn-accent btn-sm">@Localizer["Send"]</button>
                     </form>
-                    <p class="small mt-2">Subscribe to our Newsletter.</p>
+                    <p class="small mt-2">@Localizer["SubscribeNewsletter"]</p>
                 </div>
 
                 <!-- Who We Are -->
-                <div class="col-md-3">
-                    <h6 class="fw-bold">Who We Are</h6>
-                    <ul class="list-unstyled mt-3">
-                        <li><a href="#" class="footer-link">About Us</a></li>
-                        <li><a href="#" class="footer-link">News</a></li>
-                        <li><a href="#" class="footer-link">Careers</a></li>
-                        <li><a href="#" class="footer-link">Offices</a></li>
+                <div class="col-md-3 d-flex flex-column align-items-center">
+                    <h6 class="fw-bold">@Localizer["WhoWeAre"]</h6>
+                    <ul class="list-unstyled mt-3 text-center">
+                        <li><a href="#" class="footer-link">@Localizer["AboutUs"]</a></li>
+                        <li><a href="#" class="footer-link">@Localizer["News"]</a></li>
+                        <li><a href="#" class="footer-link">@Localizer["Careers"]</a></li>
+                        <li><a href="#" class="footer-link">@Localizer["Offices"]</a></li>
                     </ul>
                 </div>
 
                 <!-- Offices -->
-                <div class="col-md-3">
-                    <h6 class="fw-bold">Offices</h6>
-                    <p class="small mt-3 mb-1">Jordan</p>
-                    <p class="small mb-2">Tel: +96265805030<br />Wasfi Al Tal St, Amman</p>
+                <div class="col-md-3 d-flex flex-column align-items-center">
+                    <h6 class="fw-bold">@Localizer["Offices"]</h6>
+                    <p class="small mt-3 mb-1">@Localizer["OfficesLocation"]</p>
+                    <p class="small mb-2">@Localizer["OfficesPhone"]<br />Wasfi Al Tal St, Amman</p>
                 </div>
             </div>
         </div>
     </footer>
+
 
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-        // ✅ Adjust body padding dynamically
+        // Adjust body padding dynamically
         document.addEventListener('DOMContentLoaded', () => {
             function adjustBodyPadding() {
                 const nav = document.getElementById('mainNavbar');
@@ -192,7 +199,7 @@
     </script>
 
     <script>
-        // ✅ Dark/Light mode toggle
+        // Dark/Light mode toggle
         document.addEventListener('DOMContentLoaded', function () {
             const rootEl = document.documentElement;
             const bodyEl = document.body;
@@ -224,35 +231,6 @@
             });
 
             initTheme();
-        });
-    </script>
-
-    <script>
-        // ✅ Language dropdown
-                document.addEventListener('DOMContentLoaded', function () {
-            const rootEl = document.documentElement;
-            const langButtons = document.querySelectorAll('.lang-form button');
-
-            function setLanguage(lang) {
-                rootEl.setAttribute('lang', lang);
-                localStorage.setItem('lang', lang);
-
-                // RTL/LTR
-                rootEl.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
-            }
-
-            // Initialize saved language
-            const savedLang = localStorage.getItem('lang') || 'en';
-            setLanguage(savedLang);
-
-            // Handle click for immediate UI change
-            langButtons.forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const lang = btn.getAttribute('data-lang');
-                    setLanguage(lang);
-                    // form will submit normally to LanguageController
-                });
-            });
         });
     </script>
 

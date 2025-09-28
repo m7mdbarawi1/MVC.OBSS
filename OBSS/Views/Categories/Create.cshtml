@@ -1,14 +1,15 @@
 ﻿@model OBSS.Models.Category
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Create Category";
+    ViewData["Title"] = Localizer["CreateCategory"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Create Category</h1>
+            <h1 class="page-title">@Localizer["CreateCategory"]</h1>
         </div>
     </div>
 
@@ -21,7 +22,7 @@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
                         <div class="mb-3">
-                            <label asp-for="CategoryDesc" class="form-label"></label>
+                            <label asp-for="CategoryDesc" class="form-label">@Localizer["Category"]</label>
                             <input asp-for="CategoryDesc" class="form-control" />
                             <span asp-validation-for="CategoryDesc" class="text-danger"></span>
                         </div>
@@ -29,10 +30,10 @@
                         <!-- Buttons -->
                         <div class="d-flex justify-content-end gap-2 mt-3">
                             <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-plus-circle"></i> Create
+                                <i class="bi bi-plus-circle"></i> @Localizer["Create"]
                             </button>
                             <a asp-action="Index" class="btn btn-secondary">
-                                <i class="bi bi-arrow-left-circle"></i> Cancel
+                                <i class="bi bi-arrow-left-circle"></i> @Localizer["Cancel"]
                             </a>
                         </div>
                     </form>

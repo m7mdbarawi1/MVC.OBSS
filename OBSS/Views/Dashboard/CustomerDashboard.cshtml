@@ -1,5 +1,7 @@
-﻿@{
-    ViewData["Title"] = "Customer Dashboard";
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["CustomerDashboardTitle"];
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -8,9 +10,9 @@
         <div class="card-body text-center">
             <!-- Title -->
             <h2 class="card-title mb-3">
-                <i class="bi bi-house-heart"></i> Customer Dashboard
+                <i class="bi bi-house-heart"></i> @Localizer["CustomerDashboardTitle"]
             </h2>
-            <p class="text-muted">Welcome back! Here’s a quick snapshot of your account and activity.</p>
+            <p class="text-muted">@Localizer["CustomerWelcome"]</p>
 
             <!-- Dashboard Sections -->
             <div class="row text-center mt-4">
@@ -18,9 +20,9 @@
                 <div class="col-md-4 mb-3">
                     <div class="p-3 border rounded section-card">
                         <i class="bi bi-cart-check fs-2 text-success"></i>
-                        <h5 class="mt-2">My Cart</h5>
+                        <h5 class="mt-2">@Localizer["MyCart"]</h5>
                         <p class="small text-muted">
-                            Check the books you’ve added to your cart and get ready to complete your purchase.
+                            @Localizer["MyCartDesc"]
                         </p>
                     </div>
                 </div>
@@ -29,9 +31,9 @@
                 <div class="col-md-4 mb-3">
                     <div class="p-3 border rounded section-card">
                         <i class="bi bi-box-seam fs-2 text-primary"></i>
-                        <h5 class="mt-2">My Orders</h5>
+                        <h5 class="mt-2">@Localizer["MyOrders"]</h5>
                         <p class="small text-muted">
-                            Review your previous orders and track the status of books currently being processed.
+                            @Localizer["MyOrdersDesc"]
                         </p>
                     </div>
                 </div>
@@ -40,9 +42,9 @@
                 <div class="col-md-4 mb-3">
                     <div class="p-3 border rounded section-card">
                         <i class="bi bi-stars fs-2 text-warning"></i>
-                        <h5 class="mt-2">Recommended Books</h5>
+                        <h5 class="mt-2">@Localizer["RecommendedBooks"]</h5>
                         <p class="small text-muted">
-                            Explore personalized book suggestions based on your reading preferences and past activity.
+                            @Localizer["RecommendedBooksDesc"]
                         </p>
                     </div>
                 </div>
@@ -53,9 +55,9 @@
                 <div class="col-md-6 mb-3">
                     <div class="p-3 border rounded section-card">
                         <i class="bi bi-person-circle fs-2 text-info"></i>
-                        <h5 class="mt-2">My Profile</h5>
+                        <h5 class="mt-2">@Localizer["MyProfile"]</h5>
                         <p class="small text-muted">
-                            Update your personal details, contact information, and account settings whenever needed.
+                            @Localizer["MyProfileDesc"]
                         </p>
                     </div>
                 </div>
@@ -64,9 +66,9 @@
                 <div class="col-md-6 mb-3">
                     <div class="p-3 border rounded section-card">
                         <i class="bi bi-headset fs-2 text-danger"></i>
-                        <h5 class="mt-2">Support</h5>
+                        <h5 class="mt-2">@Localizer["Support"]</h5>
                         <p class="small text-muted">
-                            Need assistance? Get help with your orders, account, or general inquiries from our team.
+                            @Localizer["SupportDesc"]
                         </p>
                     </div>
                 </div>

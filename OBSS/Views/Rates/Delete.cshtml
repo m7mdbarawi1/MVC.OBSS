@@ -1,15 +1,16 @@
 ﻿@model OBSS.Models.Rate
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Delete Rate";
+    ViewData["Title"] = Localizer["DeleteRate"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title text-danger">Delete Rate</h1>
-            <p class="text-muted">Are you sure you want to delete this rating?</p>
+            <h1 class="page-title text-danger">@Localizer["DeleteRate"]</h1>
+            <p class="text-muted">@Localizer["ConfirmDeleteMessage"]</p>
         </div>
     </div>
 
@@ -18,17 +19,17 @@
         <div class="col-md-8 col-lg-7">
             <div class="card shadow-sm border-danger">
                 <div class="card-header bg-danger text-white">
-                    <h5 class="mb-0">Confirm Deletion</h5>
+                    <h5 class="mb-0">@Localizer["ConfirmDeletion"]</h5>
                 </div>
                 <div class="card-body">
                     <dl class="row mb-0">
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Rate1)</dt>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Rate"]</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.Rate1)</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Book)</dt>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Book"]</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.Book.BookTitle)</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.User)</dt>
+                        <dt class="col-sm-4 fw-bold">@Localizer["User"]</dt>
                         <dd class="col-sm-8">@Html.DisplayFor(model => model.User.UserName)</dd>
                     </dl>
                 </div>
@@ -37,11 +38,11 @@
                         <input type="hidden" asp-for="BookId" />
                         <input type="hidden" asp-for="UserId" />
                         <button type="submit" class="btn btn-danger">
-                            <i class="bi bi-trash"></i> Delete
+                            <i class="bi bi-trash"></i> @Localizer["Delete"]
                         </button>
                     </form>
                     <a asp-action="Index" class="btn btn-secondary">
-                        <i class="bi bi-arrow-left-circle"></i> Cancel
+                        <i class="bi bi-arrow-left-circle"></i> @Localizer["Cancel"]
                     </a>
                 </div>
             </div>

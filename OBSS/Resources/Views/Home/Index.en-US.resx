@@ -117,10 +117,43 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Hello" xml:space="preserve">
-    <value>new</value>
+  <data name="AllCategories" xml:space="preserve">
+    <value>All Categories</value>
+  </data>
+  <data name="AllRatings" xml:space="preserve">
+    <value>All Ratings</value>
+  </data>
+  <data name="Author" xml:space="preserve">
+    <value>Author</value>
+  </data>
+  <data name="AvailableBooks" xml:space="preserve">
+    <value>Available Books</value>
+  </data>
+  <data name="Average" xml:space="preserve">
+    <value>Average</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="LoginToRate" xml:space="preserve">
+    <value>Please log in to rate books.</value>
+  </data>
+  <data name="MaxPrice" xml:space="preserve">
+    <value>Max Price</value>
+  </data>
+  <data name="MinPrice" xml:space="preserve">
+    <value>Min Price</value>
+  </data>
+  <data name="NoImage" xml:space="preserve">
+    <value>No Image</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Search by title, author, or subject...</value>
   </data>
   <data name="Welcome" xml:space="preserve">
-    <value>Hey</value>
+    <value>Welcome</value>
   </data>
 </root>

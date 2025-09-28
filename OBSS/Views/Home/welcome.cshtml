@@ -1,19 +1,21 @@
-﻿@{
-    ViewData["Title"] = "Welcome";
+﻿@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
+
+@{
+    ViewData["Title"] = Localizer["WelcomeTitle"];
 }
 
 <!-- HERO SECTION -->
 <section class="hero-section text-white d-flex align-items-center"
          style="background: url('~/images/hero-bg.jpg') no-repeat center center/cover; height: 70vh;">
     <div class="container text-center">
-        <h1 class="display-3 fw-bold">Welcome to OBSS Book Store</h1>
-        <p class="lead mt-3">Discover, explore, and purchase your favorite books with ease.</p>
+        <h1 class="display-3 fw-bold">@Localizer["HeroTitle"]</h1>
+        <p class="lead mt-3">@Localizer["HeroSubtitle"]</p>
         <div class="mt-4 d-flex justify-content-center gap-3 flex-wrap">
             <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
-                <i class="bi bi-book"></i> Browse Books
+                <i class="bi bi-book"></i> @Localizer["BrowseBooks"]
             </a>
             <a asp-controller="Account" asp-action="Register" class="btn btn-accent btn-lg">
-                <i class="bi bi-person-plus"></i> Join Now
+                <i class="bi bi-person-plus"></i> @Localizer["JoinNow"]
             </a>
         </div>
     </div>
@@ -25,38 +27,38 @@
 <div class="container page-wrapper py-5">
     <div class="row mb-5 text-center">
         <div class="col-12">
-            <h2 class="fw-bold">Why Choose OBSS?</h2>
-            <p class="section-subtitle">We provide an exceptional experience for every book lover.</p>
+            <h2 class="fw-bold">@Localizer["WhyChooseOBSS"]</h2>
+            <p class="section-subtitle">@Localizer["FeaturesSubtitle"]</p>
         </div>
     </div>
     <div class="row justify-content-center g-4">
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
-                <img src="~/new.png" class="card-img-top" alt="Vast Collection">
+                <img src="~/new.png" class="card-img-top" alt="@Localizer["VastCollection"]">
                 <div class="card-body text-center">
                     <i class="bi bi-journal-richtext display-4 text-primary mb-3"></i>
-                    <h5 class="fw-bold">Vast Collection</h5>
-                    <p>Browse books across categories: novels, science, education, and more.</p>
+                    <h5 class="fw-bold">@Localizer["VastCollection"]</h5>
+                    <p>@Localizer["VastCollectionDesc"]</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
-                <img src="~/new.png" class="card-img-top" alt="Easy Shopping">
+                <img src="~/new.png" class="card-img-top" alt="@Localizer["EasyShopping"]">
                 <div class="card-body text-center">
                     <i class="bi bi-cart-check display-4 text-success mb-3"></i>
-                    <h5 class="fw-bold">Easy Shopping</h5>
-                    <p>Add books to your cart, manage quantities, and checkout securely.</p>
+                    <h5 class="fw-bold">@Localizer["EasyShopping"]</h5>
+                    <p>@Localizer["EasyShoppingDesc"]</p>
                 </div>
             </div>
         </div>
         <div class="col-md-4">
             <div class="card shadow-sm h-100">
-                <img src="~/new.png" class="card-img-top" alt="Ratings & Reviews">
+                <img src="~/new.png" class="card-img-top" alt="@Localizer["RatingsReviews"]">
                 <div class="card-body text-center">
                     <i class="bi bi-star-fill display-4 text-warning mb-3"></i>
-                    <h5 class="fw-bold">Ratings & Reviews</h5>
-                    <p>Rate books, share your opinions, and explore top-rated reads.</p>
+                    <h5 class="fw-bold">@Localizer["RatingsReviews"]</h5>
+                    <p>@Localizer["RatingsReviewsDesc"]</p>
                 </div>
             </div>
         </div>
@@ -68,12 +70,9 @@
 <!-- ABOUT SECTION -->
 <section id="about" class="py-5">
     <div class="container text-center">
-        <h2 class="fw-bold">About OBSS</h2>
-        <p class="section-subtitle mt-3">
-            OBSS Book Store is your trusted partner for exploring knowledge and imagination.
-            We believe in empowering readers with a wide selection of titles across all genres.
-        </p>
-        <img src="~/new.png" alt="About Us" class="img-fluid rounded shadow mt-4" style="max-height: 300px;">
+        <h2 class="fw-bold">@Localizer["AboutOBSS"]</h2>
+        <p class="section-subtitle mt-3">@Localizer["AboutOBSSDesc"]</p>
+        <img src="~/new.png" alt="@Localizer["AboutOBSS"]" class="img-fluid rounded shadow mt-4" style="max-height: 300px;">
     </div>
 </section>
 
@@ -83,8 +82,8 @@
 <div id="popular-books" class="container py-5">
     <div class="row mb-4 text-center">
         <div class="col-12">
-            <h2 class="fw-bold">Popular Books</h2>
-            <p class="section-subtitle">Explore trending titles among our readers.</p>
+            <h2 class="fw-bold">@Localizer["PopularBooks"]</h2>
+            <p class="section-subtitle">@Localizer["PopularBooksSubtitle"]</p>
         </div>
     </div>
     <div class="row g-4">
@@ -92,8 +91,8 @@
             <div class="card shadow-sm h-100">
                 <img src="~/new.png" class="card-img-top" alt="Book 1">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Book Title 1</h5>
-                    <p class="card-text">Short description goes here.</p>
+                    <h5 class="card-title fw-bold">@Localizer["Book1Title"]</h5>
+                    <p class="card-text">@Localizer["Book1Desc"]</p>
                 </div>
             </div>
         </div>
@@ -101,8 +100,8 @@
             <div class="card shadow-sm h-100">
                 <img src="~/new.png" class="card-img-top" alt="Book 2">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Book Title 2</h5>
-                    <p class="card-text">Short description goes here.</p>
+                    <h5 class="card-title fw-bold">@Localizer["Book2Title"]</h5>
+                    <p class="card-text">@Localizer["Book2Desc"]</p>
                 </div>
             </div>
         </div>
@@ -110,8 +109,8 @@
             <div class="card shadow-sm h-100">
                 <img src="~/new.png" class="card-img-top" alt="Book 3">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Book Title 3</h5>
-                    <p class="card-text">Short description goes here.</p>
+                    <h5 class="card-title fw-bold">@Localizer["Book3Title"]</h5>
+                    <p class="card-text">@Localizer["Book3Desc"]</p>
                 </div>
             </div>
         </div>
@@ -119,8 +118,8 @@
             <div class="card shadow-sm h-100">
                 <img src="~/new.png" class="card-img-top" alt="Book 4">
                 <div class="card-body">
-                    <h5 class="card-title fw-bold">Book Title 4</h5>
-                    <p class="card-text">Short description goes here.</p>
+                    <h5 class="card-title fw-bold">@Localizer["Book4Title"]</h5>
+                    <p class="card-text">@Localizer["Book4Desc"]</p>
                 </div>
             </div>
         </div>
@@ -134,26 +133,26 @@
     <div class="container">
         <div class="row mb-4 text-center">
             <div class="col-12">
-                <h2 class="fw-bold">What Our Customers Say</h2>
+                <h2 class="fw-bold">@Localizer["Testimonials"]</h2>
             </div>
         </div>
         <div class="row g-4">
             <div class="col-md-4">
                 <div class="card shadow-sm h-100 p-3">
-                    <p>"Amazing collection! I always find what I need here."</p>
-                    <h6 class="fw-bold mt-3">- Sarah A.</h6>
+                    <p>@Localizer["Testimonial1"]</p>
+                    <h6 class="fw-bold mt-3">@Localizer["Testimonial1Author"]</h6>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card shadow-sm h-100 p-3">
-                    <p>"The checkout process is simple and secure. Highly recommend!"</p>
-                    <h6 class="fw-bold mt-3">- Ahmed K.</h6>
+                    <p>@Localizer["Testimonial2"]</p>
+                    <h6 class="fw-bold mt-3">@Localizer["Testimonial2Author"]</h6>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="card shadow-sm h-100 p-3">
-                    <p>"Great customer service and fast delivery every time."</p>
-                    <h6 class="fw-bold mt-3">- Lina M.</h6>
+                    <p>@Localizer["Testimonial3"]</p>
+                    <h6 class="fw-bold mt-3">@Localizer["Testimonial3Author"]</h6>
                 </div>
             </div>
         </div>
@@ -165,10 +164,10 @@
 <!-- CALL TO ACTION -->
 <section class="cta-section text-white text-center py-5">
     <div class="container">
-        <h2 class="fw-bold">Start Your Reading Journey Today</h2>
-        <p class="lead mt-2">Join OBSS and explore thousands of titles at your fingertips.</p>
+        <h2 class="fw-bold">@Localizer["CTA_Title"]</h2>
+        <p class="lead mt-2">@Localizer["CTA_Subtitle"]</p>
         <a asp-controller="Account" asp-action="Register" class="btn btn-light btn-lg mt-3">
-            <i class="bi bi-person-plus"></i> Sign Up Now
+            <i class="bi bi-person-plus"></i> @Localizer["CTA_Button"]
         </a>
     </div>
 </section>

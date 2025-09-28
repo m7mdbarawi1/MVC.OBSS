@@ -1,14 +1,15 @@
 ﻿@model OBSS.Models.Book
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Book Details";
+    ViewData["Title"] = Localizer["BookDetails"];
 }
 
 <div class="container-fluid page-wrapper mt-4">
     <!-- Header -->
     <div class="row mb-4">
         <div class="col-12 text-center">
-            <h1 class="page-title">Book Details</h1>
+            <h1 class="page-title">@Localizer["BookDetails"]</h1>
         </div>
     </div>
 
@@ -21,51 +22,57 @@
                     <!-- Book Cover Image -->
                     @if (!string.IsNullOrEmpty(Model.CoverImageUrl))
                     {
-                        <img src="@Model.CoverImageUrl" alt="Book Cover"
+                        <img src="@Model.CoverImageUrl" alt="@Localizer["Cover"]"
                              class="img-fluid rounded shadow-sm mb-3 w-100"
                              style="max-height: 400px; object-fit: cover;" />
                     }
                     else
                     {
-                        <span class="text-muted d-block mb-3">No image available</span>
+                        <span class="text-muted d-block mb-3">@Localizer["NoImage"]</span>
                     }
 
                     <!-- Title, Category, Price, Add to Cart -->
                     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-2">
                         <div class="text-start">
                             <h3 class="fw-bold mb-1">@Model.BookTitle</h3>
-                            <p class="mb-0 text-muted">Category: @Model.Category?.CategoryDesc</p>
+                            <p class="mb-0 text-muted">@Localizer["Category"]: @Model.Category?.CategoryDesc</p>
                             <p class="mb-0 fw-bold text-success">$@Model.Price</p>
                         </div>
                         <form asp-controller="Carts" asp-action="AddToCart" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="bookId" value="@Model.BookId" />
                             <button type="submit" class="btn btn-success">
-                                <i class="bi bi-cart-plus"></i> Add to Cart
+                                <i class="bi bi-cart-plus"></i> @Localizer["AddToCart"]
                             </button>
                         </form>
                     </div>
 
                     <!-- Other Book Details -->
                     <dl class="row text-start mb-0">
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Subject)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Subject)</dd>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Subject"]</dt>
+                        <dd class="col-sm-8">@Model.Subject</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Author)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Author)</dd>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Author"]</dt>
+                        <dd class="col-sm-8">@Model.Author</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.PublishDate)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.PublishDate)</dd>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Publish"]</dt>
+                        <dd class="col-sm-8">@Model.PublishDate?.ToString("d")</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.PublishingHouse)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.PublishingHouse)</dd>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Publisher"]</dt>
+                        <dd class="col-sm-8">@Model.PublishingHouse</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.QuantityInStore)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.QuantityInStore)</dd>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Quantity"]</dt>
+                        <dd class="col-sm-8">@Model.QuantityInStore</dd>
 
-                        <dt class="col-sm-4 fw-bold">@Html.DisplayNameFor(model => model.Description)</dt>
-                        <dd class="col-sm-8">@Html.DisplayFor(model => model.Description)</dd>
+                        <dt class="col-sm-4 fw-bold">@Localizer["Description"]</dt>
+                        <dd class="col-sm-8">@Model.Description</dd>
                     </dl>
+
+                </div>
+                <div class="card-footer text-end">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left-circle"></i> @Localizer["Back"]
+                    </a>
                 </div>
             </div>
         </div>

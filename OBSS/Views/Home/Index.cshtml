@@ -1,11 +1,10 @@
 ﻿@model IEnumerable<OBSS.Models.Book>
 @using System.Security.Claims
-
 @using Microsoft.AspNetCore.Mvc.Localization
 @inject IViewLocalizer Localizer
 
 @{
-    ViewData["Title"] = "Available Books";
+    ViewData["Title"] = Localizer["AvailableBooks"];
 
     int? currentUserId = null;
     if (User.Identity?.IsAuthenticated ?? false)
@@ -21,7 +20,7 @@
 <div class="container page-wrapper mt-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1 class="page-title mb-0">Available Books</h1>
+        <h1 class="page-title mb-0">@Localizer["AvailableBooks"]</h1>
         <h1>@Localizer["Welcome"]</h1>
 
         <span id="resultCount" class="fw-bold text-secondary"></span>
@@ -32,11 +31,11 @@
         <div class="card-body">
             <div class="row g-2">
                 <div class="col-md-3">
-                    <input type="text" id="searchInput" class="form-control" placeholder="Search by title, author, or subject...">
+                    <input type="text" id="searchInput" class="form-control" placeholder="@Localizer["SearchPlaceholder"]">
                 </div>
                 <div class="col-md-3">
                     <select id="categoryFilter" class="form-select">
-                        <option value="">All Categories</option>
+                        <option value="">@Localizer["AllCategories"]</option>
                         @foreach (var category in Model.Select(b => b.Category?.CategoryDesc).Distinct())
                         {
                             if (!string.IsNullOrEmpty(category))
@@ -47,14 +46,14 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <input type="number" id="minPrice" class="form-control" placeholder="Min Price">
+                    <input type="number" id="minPrice" class="form-control" placeholder="@Localizer["MinPrice"]">
                 </div>
                 <div class="col-md-2">
-                    <input type="number" id="maxPrice" class="form-control" placeholder="Max Price">
+                    <input type="number" id="maxPrice" class="form-control" placeholder="@Localizer["MaxPrice"]">
                 </div>
                 <div class="col-md-2">
                     <select id="ratingFilter" class="form-select">
-                        <option value="">All Ratings</option>
+                        <option value="">@Localizer["AllRatings"]</option>
                         <option value="1">⭐ 1+</option>
                         <option value="2">⭐ 2+</option>
                         <option value="3">⭐ 3+</option>
@@ -74,7 +73,6 @@
             var avgRating = book.Rates.Any() ? book.Rates.Average(r => r.Rate1) : 0;
 
             <div class="col-md-3 mb-4 book-card-wrapper">
-                <!-- ✅ changed from col-md-4 to col-md-3 -->
                 <a href="@Url.Action("Details", "Books", new { id = book.BookId })" class="card-link-wrapper">
                     <div class="card h-100 shadow-sm book-card"
                          data-title="@book.BookTitle.ToLower()"
@@ -90,14 +88,14 @@
                         }
                         else
                         {
-                            <img src="~/images/no-image.png" class="card-img-top" alt="No Image">
+                            <img src="~/images/no-image.png" class="card-img-top" alt="@Localizer["NoImage"]">
                         }
 
                         <div class="card-body">
                             <h5 class="card-title fw-bold">@book.BookTitle</h5>
-                            <p class="card-text"><strong>Author:</strong> @book.Author</p>
-                            <p class="card-text"><strong>Category:</strong> @book.Category?.CategoryDesc</p>
-                            <p class="card-text"><strong>Quantity:</strong> @book.QuantityInStore</p>
+                            <p class="card-text"><strong>@Localizer["Author"]:</strong> @book.Author</p>
+                            <p class="card-text"><strong>@Localizer["Category"]:</strong> @book.Category?.CategoryDesc</p>
+                            <p class="card-text"><strong>@Localizer["Quantity"]:</strong> @book.QuantityInStore</p>
                             <p class="card-text fw-bold text-primary">@book.Price JD</p>
 
                             <!-- ⭐ Star Rating -->
@@ -113,7 +111,7 @@
 
                             <!-- 📊 Average Rating -->
                             <div class="avg-rating small text-muted">
-                                Average: @avgRating.ToString("0.0") / 5
+                                @Localizer["Average"]: @avgRating.ToString("0.0") / 5
                             </div>
                         </div>
                     </div>
@@ -122,9 +120,9 @@
         }
     </div>
 
-
-<!-- Hidden current user id -->
-<input type="hidden" id="currentUserId" value="@(currentUserId ?? 0)" />
+    <!-- Hidden current user id -->
+    <input type="hidden" id="currentUserId" value="@(currentUserId ?? 0)" />
+</div>
 
 @section Scripts {
     <script>
@@ -208,12 +206,12 @@
                     // Save rating
                     star.addEventListener("click", function (e) {
                         e.preventDefault();
-                        e.stopPropagation(); // prevent card navigation
+                        e.stopPropagation();
 
                         const rating = parseInt(this.dataset.value);
 
                         if (!currentUserId || currentUserId === "0") {
-                            alert("Please log in to rate books.");
+                            alert("@Localizer["LoginToRate"]");
                             return;
                         }
 
@@ -229,7 +227,7 @@
                         .then(data => {
                             if (data.success && data.avgRating !== undefined) {
                                 const avgText = starContainer.parentElement.querySelector(".avg-rating");
-                                avgText.textContent = `Average: ${data.avgRating} / 5`;
+                                avgText.textContent = `@Localizer["Average"]: ${data.avgRating} / 5`;
                             }
                         })
                         .catch(err => console.error("Error:", err));
