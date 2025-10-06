@@ -34,10 +34,8 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .Include(u => u.Gender)
-                .Include(u => u.UserTypeNavigation)
-                .FirstOrDefaultAsync(m => m.UserId == id);
+            var user = await _context.Users.Include(u => u.Gender).Include(u => u.UserTypeNavigation).FirstOrDefaultAsync(m => m.UserId == id);
+            
             if (user == null)
             {
                 return NotFound();
@@ -49,8 +47,8 @@ namespace OBSS.Controllers
         // GET: Users/Create
         public IActionResult Create()
         {
-            ViewData["GenderId"] = new SelectList(_context.Genders, "GenderId", "GenderId");
-            ViewData["UserType"] = new SelectList(_context.UserTypes, "TypeId", "TypeId");
+            ViewData["GenderId"] = new SelectList(_context.Genders, "GenderId", "GenderDesc");
+            ViewData["UserType"] = new SelectList(_context.UserTypes, "TypeId", "TypeDesc");
             return View();
         }
 
@@ -80,7 +78,6 @@ namespace OBSS.Controllers
             return View(user);
         }
 
-
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -90,18 +87,17 @@ namespace OBSS.Controllers
             }
 
             var user = await _context.Users.FindAsync(id);
+
             if (user == null)
             {
                 return NotFound();
             }
-            ViewData["GenderId"] = new SelectList(_context.Genders, "GenderId", "GenderId", user.GenderId);
-            ViewData["UserType"] = new SelectList(_context.UserTypes, "TypeId", "TypeId", user.UserType);
+            ViewData["GenderId"] = new SelectList(_context.Genders, "GenderId", "GenderDesc", user.GenderId);
+            ViewData["UserType"] = new SelectList(_context.UserTypes, "TypeId", "TypeDesc", user.UserType);
             return View(user);
         }
 
         // POST: Users/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("UserId,UserType,UserName,Password,FirstName,LastName,Birthdate,GenderId,ContactNumber,Email")] User user)
@@ -147,7 +143,6 @@ namespace OBSS.Controllers
             return View(user);
         }
 
-
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
@@ -156,10 +151,7 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var user = await _context.Users
-                .Include(u => u.Gender)
-                .Include(u => u.UserTypeNavigation)
-                .FirstOrDefaultAsync(m => m.UserId == id);
+            var user = await _context.Users.Include(u => u.Gender).Include(u => u.UserTypeNavigation).FirstOrDefaultAsync(m => m.UserId == id);
             if (user == null)
             {
                 return NotFound();
@@ -172,11 +164,7 @@ namespace OBSS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _context.Users
-                .Include(u => u.Carts)
-                .Include(u => u.Rates)
-                .Include(u => u.Sales)
-                .FirstOrDefaultAsync(u => u.UserId == id);
+            var user = await _context.Users.Include(u => u.Carts).Include(u => u.Rates).Include(u => u.Sales).FirstOrDefaultAsync(u => u.UserId == id);
 
             if (user != null)
             {
@@ -201,5 +189,6 @@ namespace OBSS.Controllers
         {
             return _context.Users.Any(e => e.UserId == id);
         }
+
     }
 }

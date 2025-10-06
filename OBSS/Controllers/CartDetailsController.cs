@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace OBSS.Controllers
         }
 
         // GET: CartDetails
+        [Authorize(Roles = "Admin")] // Only Admin can see all cart details
         public async Task<IActionResult> Index()
         {
             var oBSSContext = _context.CartDetails.Include(c => c.Book).Include(c => c.Cart);
@@ -27,6 +29,7 @@ namespace OBSS.Controllers
         }
 
         // GET: CartDetails/Details
+        [Authorize(Roles = "Admin")] // Only Admin can view details
         public async Task<IActionResult> Details(int? cartId, int? bookId)
         {
             if (cartId == null || bookId == null)
@@ -34,8 +37,7 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var cartDetail = await _context.CartDetails
-                .Include(c => c.Book).Include(c => c.Cart).FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
+            var cartDetail = await _context.CartDetails.Include(c => c.Book).Include(c => c.Cart).FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);
 
             if (cartDetail == null)
             {
@@ -46,6 +48,7 @@ namespace OBSS.Controllers
         }
 
         // GET: CartDetails/Create
+        [Authorize(Roles = "Admin")] // Only Admin can access create page
         public IActionResult Create()
         {
             ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookId");
@@ -54,8 +57,8 @@ namespace OBSS.Controllers
         }
 
         // POST: CartDetails/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // Only Admin can create
         public async Task<IActionResult> Create([Bind("CartId,BookId,Quantity")] CartDetail cartDetail)
         {
             if (ModelState.IsValid)
@@ -70,6 +73,7 @@ namespace OBSS.Controllers
         }
 
         // GET: CartDetails/Edit
+        [Authorize(Roles = "Admin")] // Only Admin can access edit page
         public async Task<IActionResult> Edit(int? cartId, int? bookId)
         {
             if (cartId == null || bookId == null)
@@ -90,8 +94,8 @@ namespace OBSS.Controllers
         }
 
         // POST: CartDetails/Edit
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // Only Admin can edit
         public async Task<IActionResult> Edit(int cartId, int bookId, [Bind("CartId,BookId,Quantity")] CartDetail cartDetail)
         {
             if (cartId != cartDetail.CartId || bookId != cartDetail.BookId)
@@ -125,6 +129,7 @@ namespace OBSS.Controllers
         }
 
         // GET: CartDetails/Delete
+        [Authorize(Roles = "Admin")] // Only Admin can access delete page
         public async Task<IActionResult> Delete(int? cartId, int? bookId)
         {
             if (cartId == null || bookId == null)
@@ -143,8 +148,8 @@ namespace OBSS.Controllers
         }
 
         // POST: CartDetails/Delete
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // Only Admin can edit
         public async Task<IActionResult> DeleteConfirmed(int cartId, int bookId)
         {
             var cartDetail = await _context.CartDetails.FirstOrDefaultAsync(cd => cd.CartId == cartId && cd.BookId == bookId);

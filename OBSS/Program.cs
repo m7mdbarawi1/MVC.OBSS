@@ -8,13 +8,11 @@ using System.Globalization;
 var builder = WebApplication.CreateBuilder(args);
 
 // 1) DbContext
-var cs = builder.Configuration.GetConnectionString("OBSS")
-    ?? throw new InvalidOperationException("Connection string not found.");
+var cs = builder.Configuration.GetConnectionString("OBSS") ?? throw new InvalidOperationException("Connection string not found.");
 builder.Services.AddDbContext<OBSSContext>(opt => opt.UseSqlServer(cs));
 
 // 2) Cookie Authentication
-builder.Services.AddAuthentication("OBSSAuth")
-    .AddCookie("OBSSAuth", options =>
+builder.Services.AddAuthentication("OBSSAuth").AddCookie("OBSSAuth", options =>
     {
         options.Cookie.Name = "OBSS.Auth";
         options.LoginPath = "/Account/Login";
@@ -27,8 +25,7 @@ builder.Services.AddAuthentication("OBSSAuth")
     });
 
 builder.Services.AddAuthorization();
-builder.Services.AddControllersWithViews()
-    .AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
+builder.Services.AddControllersWithViews().AddViewLocalization(LanguageViewLocationExpanderFormat.Suffix);
 
 builder.Services.AddLocalization(options =>
 {
@@ -58,8 +55,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 var app = builder.Build();
 
 // Enable localization
-var locOptions = app.Services.GetRequiredService<
-    Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
+var locOptions = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>();
 app.UseRequestLocalization(locOptions.Value);
 
 // 4) Pipeline

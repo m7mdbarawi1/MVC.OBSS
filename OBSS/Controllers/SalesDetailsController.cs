@@ -54,8 +54,6 @@ namespace OBSS.Controllers
         }
 
         // POST: SalesDetails/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("SaleId,DetailId,BookId,Quantity,Price")] SalesDetail salesDetail)
@@ -90,8 +88,6 @@ namespace OBSS.Controllers
         }
 
         // POST: SalesDetails/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("SaleId,DetailId,BookId,Quantity,Price")] SalesDetail salesDetail)
@@ -134,10 +130,7 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var salesDetail = await _context.SalesDetails
-                .Include(s => s.Book)
-                .Include(s => s.Sale)
-                .FirstOrDefaultAsync(m => m.SaleId == id);
+            var salesDetail = await _context.SalesDetails.Include(s => s.Book).Include(s => s.Sale).FirstOrDefaultAsync(m => m.SaleId == id);
             if (salesDetail == null)
             {
                 return NotFound();
@@ -145,7 +138,6 @@ namespace OBSS.Controllers
 
             return View(salesDetail);
         }
-
 
         // POST: SalesDetails/Delete/5
         [HttpPost, ActionName("Delete")]
@@ -165,29 +157,19 @@ namespace OBSS.Controllers
         // GET: SalesDetails/DownloadReport
         public async Task<IActionResult> DownloadReport()
         {
-            var salesDetails = await _context.SalesDetails
-                .Include(s => s.Book)
-                .Include(s => s.Sale)
-                .ToListAsync();
+            var salesDetails = await _context.SalesDetails.Include(s => s.Book).Include(s => s.Sale).ToListAsync();
 
             var sb = new StringBuilder();
             sb.AppendLine("DetailId,SaleId,BookId,BookTitle,Quantity,Price,SaleDate");
 
             foreach (var detail in salesDetails)
             {
-                sb.AppendLine($"{detail.DetailId}," +
-                              $"{detail.SaleId}," +
-                              $"{detail.BookId}," +
-                              $"{detail.Book?.BookTitle}," + // Changed 'Title' to 'BookTitle'
-                              $"{detail.Quantity}," +
-                              $"{detail.Price}," +
-                              $"{detail.Sale?.SaleDate:yyyy-MM-dd}");
+                sb.AppendLine($"{detail.DetailId}," + $"{detail.SaleId}," + $"{detail.BookId}," +$"{detail.Book?.BookTitle}," + $"{detail.Quantity}," +$"{detail.Price}," + $"{detail.Sale?.SaleDate:yyyy-MM-dd}");
             }
 
             var bytes = Encoding.UTF8.GetBytes(sb.ToString());
             return File(bytes, "text/csv", "SalesDetailsReport.csv");
         }
-
 
         private bool SalesDetailExists(int id)
         {

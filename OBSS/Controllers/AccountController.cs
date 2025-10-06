@@ -17,8 +17,7 @@ namespace OBSS.Controllers
             _context = context;
         }
 
-        // GET: /Account/Login
-        [HttpGet, AllowAnonymous]
+        [AllowAnonymous] // Anyone can access the login page
         public IActionResult Login(string? returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
@@ -26,14 +25,14 @@ namespace OBSS.Controllers
         }
 
         // POST: /Account/Login
-        [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
+        [HttpPost, AllowAnonymous, ValidateAntiForgeryToken] // Form submission for new users, CSRF protected
         public async Task<IActionResult> Login(string username, string password, string? returnUrl = null)
         {
             var user = await _context.Users.Include(u => u.UserTypeNavigation).FirstOrDefaultAsync(u => u.UserName == username && u.Password == password);
 
             if (user == null)
             {
-                ModelState.AddModelError(string.Empty, "Invalid username or password.");
+                ViewBag.Error = "Invalid username or password.";
                 return View();
             }
 
@@ -75,22 +74,21 @@ namespace OBSS.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // POST: /Account/Logout
-        [HttpPost, ValidateAntiForgeryToken]
+        [Authorize] // Only authenticated users can log out
+        [HttpPost, ValidateAntiForgeryToken] // CSRF protection
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync("OBSSAuth");
             return RedirectToAction(nameof(Login));
         }
 
-        [HttpGet]
         public IActionResult AccessDenied() => View();
 
         // GET: /Account/Register
-        [HttpGet, AllowAnonymous]
+        [AllowAnonymous] // Anyone can see the registration page
         public IActionResult Register()
         {
-            ViewBag.UserTypes = _context.UserTypes.Where(t => t.TypeId != 1).ToList();
+            ViewBag.UserTypes = _context.UserTypes.ToList();
 
             ViewBag.Genders = _context.Genders.ToList();
 
@@ -101,13 +99,38 @@ namespace OBSS.Controllers
         [HttpPost, AllowAnonymous, ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(User model)
         {
+            // Username unique
             if (_context.Users.Any(u => u.UserName == model.UserName))
             {
                 ModelState.AddModelError("UserName", "Username already taken.");
             }
+
+            // Email unique
             if (_context.Users.Any(u => u.Email == model.Email))
             {
                 ModelState.AddModelError("Email", "Email already registered.");
+            }
+
+            // Password validation
+            if (string.IsNullOrEmpty(model.Password) || model.Password.Length < 8)
+            {
+                ModelState.AddModelError("Password", "Password must be at least 8 characters long.");
+            }
+
+            // Contact number validation (exactly 10 digits)
+            if (!string.IsNullOrEmpty(model.ContactNumber))
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(model.ContactNumber, @"^\d{10}$"))
+                {
+                    ModelState.AddModelError("ContactNumber", "Contact number must be exactly 10 digits.");
+                }
+            }
+
+            // Age validation: must be at least 18
+            var today = DateOnly.FromDateTime(DateTime.Today);
+            if (model.Birthdate > today.AddYears(-18))
+            {
+                ModelState.AddModelError("Birthdate", "You must be at least 18 years old.");
             }
 
             if (!ModelState.IsValid)
@@ -121,7 +144,7 @@ namespace OBSS.Controllers
             {
                 UserType = model.UserType,
                 UserName = model.UserName,
-                Password = model.Password,
+                Password = model.Password, // still plain text (only validation required)
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Birthdate = model.Birthdate,
@@ -140,11 +163,11 @@ namespace OBSS.Controllers
                 .FirstOrDefaultAsync();
 
             var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim("UserTypeId", user.UserType.ToString())
-            };
+    {
+        new Claim(ClaimTypes.Name, $"{user.FirstName} {user.LastName}"),
+        new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+        new Claim("UserTypeId", user.UserType.ToString())
+    };
 
             if (!string.IsNullOrEmpty(role))
             {
@@ -169,9 +192,8 @@ namespace OBSS.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: /Account/MyProfile
-        [Authorize]
-        [HttpGet]
+
+        [Authorize] // Only logged-in users can view their profile
         public async Task<IActionResult> MyProfile()
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
@@ -188,7 +210,6 @@ namespace OBSS.Controllers
         }
 
         [Authorize]
-        [HttpGet]
         public IActionResult HomeRedirect()
         {
             if (User.IsInRole("Admin"))
@@ -201,21 +222,52 @@ namespace OBSS.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [Authorize] // Only logged-in users can update their profile
+        [HttpPost, ValidateAntiForgeryToken] // CSRF protection
         public async Task<IActionResult> MyProfile(User model)
         {
-            if (!ModelState.IsValid)
+            // Password length check
+            if (!string.IsNullOrEmpty(model.Password) && model.Password.Length < 8)
             {
-                return View(model);
+                ModelState.AddModelError("Password", "Password must be at least 8 characters long.");
+            }
+
+            // Contact number format check (only digits, exactly 10)
+            if (!string.IsNullOrEmpty(model.ContactNumber))
+            {
+                if (!System.Text.RegularExpressions.Regex.IsMatch(model.ContactNumber, @"^\d{10}$"))
+                {
+                    ModelState.AddModelError("ContactNumber", "Contact number must be exactly 10 digits.");
+                }
             }
 
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userIdClaim) || !int.TryParse(userIdClaim, out var userId))
             {
                 return RedirectToAction("Login");
+            }
+
+            // ✅ Check if username already exists (but ignore current user)
+            bool usernameTaken = await _context.Users
+                .AnyAsync(u => u.UserName == model.UserName && u.UserId != userId);
+
+            if (usernameTaken)
+            {
+                ModelState.AddModelError("UserName", "This username is already taken.");
+            }
+
+            // ✅ Check if email already exists (optional, like in Register)
+            bool emailTaken = await _context.Users
+                .AnyAsync(u => u.Email == model.Email && u.UserId != userId);
+
+            if (emailTaken)
+            {
+                ModelState.AddModelError("Email", "This email is already registered.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
             }
 
             var user = await _context.Users.FindAsync(userId);
@@ -236,10 +288,8 @@ namespace OBSS.Controllers
             return View(user);
         }
 
-
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [Authorize] // Only logged-in users can delete their account
+        [HttpPost, ValidateAntiForgeryToken] // CSRF protection
         public async Task<IActionResult> DeleteMyAccount()
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -257,7 +307,6 @@ namespace OBSS.Controllers
 
             return RedirectToAction("Login", "Account");
         }
-
 
     }
 }

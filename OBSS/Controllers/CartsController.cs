@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,15 +21,14 @@ namespace OBSS.Controllers
             _context = context;
         }
 
-        // ===========================
-        // Scaffolded CRUD
-        // ===========================
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var oBSSContext = _context.Carts.Include(c => c.User);
             return View(await oBSSContext.ToListAsync());
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -42,6 +42,7 @@ namespace OBSS.Controllers
             return View(cart);
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["UserId"] = new SelectList(_context.Users, "UserId", "UserId");
@@ -50,6 +51,7 @@ namespace OBSS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("CartId,UserId,CreationDate")] Cart cart)
         {
             if (ModelState.IsValid)
@@ -62,6 +64,7 @@ namespace OBSS.Controllers
             return View(cart);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -77,6 +80,7 @@ namespace OBSS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("CartId,UserId,CreationDate")] Cart cart)
         {
             if (id != cart.CartId)
@@ -102,6 +106,7 @@ namespace OBSS.Controllers
             return View(cart);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -117,6 +122,7 @@ namespace OBSS.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var cart = await _context.Carts.FindAsync(id);
@@ -134,11 +140,8 @@ namespace OBSS.Controllers
             return _context.Carts.Any(e => e.CartId == id);
         }
 
-        // ===========================
-        // Custom Cart Actions
-        // ===========================
-
         // My Cart for logged-in user
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> MyCart()
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -150,11 +153,7 @@ namespace OBSS.Controllers
             if (cart == null)
                 return View(new List<CartDetail>());
 
-            var cartDetails = await _context.CartDetails
-                .Include(cd => cd.Book)
-                .ThenInclude(b => b.Category)
-                .Where(cd => cd.CartId == cart.CartId)
-                .ToListAsync();
+            var cartDetails = await _context.CartDetails.Include(cd => cd.Book).ThenInclude(b => b.Category).Where(cd => cd.CartId == cart.CartId).ToListAsync();
 
             // ✅ Expire items older than 1 minute
             var expiredItems = cartDetails.Where(cd => cd.AddedDate < DateTime.Now.AddMinutes(-1)).ToList();
@@ -193,9 +192,9 @@ namespace OBSS.Controllers
             return View(cartDetails);
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> AddToCart(int bookId)
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -221,8 +220,7 @@ namespace OBSS.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            var existingItem = await _context.CartDetails
-                .FirstOrDefaultAsync(cd => cd.CartId == cart.CartId && cd.BookId == bookId);
+            var existingItem = await _context.CartDetails.FirstOrDefaultAsync(cd => cd.CartId == cart.CartId && cd.BookId == bookId);
 
             if (existingItem == null)
             {
@@ -250,9 +248,9 @@ namespace OBSS.Controllers
             return RedirectToAction(nameof(MyCart));
         }
 
-
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> RemoveFromCart(int bookId)
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -275,16 +273,14 @@ namespace OBSS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Customer")]
         public async Task<IActionResult> Purchase()
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!int.TryParse(userIdString, out int userId))
                 return Unauthorized();
 
-            var cart = await _context.Carts
-                .Include(c => c.CartDetails)
-                .ThenInclude(cd => cd.Book)
-                .FirstOrDefaultAsync(c => c.UserId == userId);
+            var cart = await _context.Carts.Include(c => c.CartDetails).ThenInclude(cd => cd.Book).FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null || !cart.CartDetails.Any())
             {
@@ -293,9 +289,7 @@ namespace OBSS.Controllers
             }
 
             // ✅ Stock validation before purchase
-            var invalidItems = cart.CartDetails
-                .Where(cd => cd.Book.QuantityInStore <= 0 || cd.Quantity > cd.Book.QuantityInStore)
-                .ToList();
+            var invalidItems = cart.CartDetails.Where(cd => cd.Book.QuantityInStore <= 0 || cd.Quantity > cd.Book.QuantityInStore).ToList();
 
             if (invalidItems.Any())
             {
@@ -337,8 +331,8 @@ namespace OBSS.Controllers
             return RedirectToAction(nameof(MyCart));
         }
 
-
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateQuantity(int bookId, int quantity)
         {
             var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -357,10 +351,7 @@ namespace OBSS.Controllers
             item.Quantity = quantity > 0 ? quantity : 1;
             await _context.SaveChangesAsync();
 
-            var cartDetails = await _context.CartDetails
-                .Include(cd => cd.Book)
-                .Where(cd => cd.CartId == cart.CartId)
-                .ToListAsync();
+            var cartDetails = await _context.CartDetails.Include(cd => cd.Book).Where(cd => cd.CartId == cart.CartId).ToListAsync();
 
             var itemPrice = item.Book.Price * item.Quantity;
             var totalPrice = cartDetails.Sum(cd => cd.Book.Price * cd.Quantity);

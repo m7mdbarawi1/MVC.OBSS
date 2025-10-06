@@ -14,4 +14,5 @@ public class LanguageController : Controller
 
         return LocalRedirect(returnUrl);
     }
+
 }

@@ -15,6 +15,7 @@ namespace OBSS.Controllers
         [Authorize(Roles = "Customer")]
         public IActionResult CustomerDashboard()
         {
+
             return View();
         }
     }

@@ -8,7 +8,7 @@ public partial class User
 {
     public int UserId { get; set; }
 
-    public int UserType { get; set; }
+    public int? UserType { get; set; }
 
     public string UserName { get; set; } = null!;
 
@@ -20,7 +20,7 @@ public partial class User
 
     public DateOnly Birthdate { get; set; }
 
-    public int GenderId { get; set; }
+    public int? GenderId { get; set; }
 
     public string? ContactNumber { get; set; }
 
@@ -29,12 +29,12 @@ public partial class User
     public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
 
     [ValidateNever]
-    public virtual Gender Gender { get; set; } = null!;
+    public virtual Gender? Gender { get; set; } = null!;
 
     public virtual ICollection<Rate> Rates { get; set; } = new List<Rate>();
 
     public virtual ICollection<Sale> Sales { get; set; } = new List<Sale>();
 
     [ValidateNever]
-    public virtual UserType UserTypeNavigation { get; set; } = null!;
+    public virtual UserType? UserTypeNavigation { get; set; } = null!;
 }

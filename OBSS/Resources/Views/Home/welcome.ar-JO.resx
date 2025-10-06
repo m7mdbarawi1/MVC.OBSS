@@ -124,28 +124,28 @@
     <value>OBSS متجر الكتب هو شريكك الموثوق لاستكشاف المعرفة والخيال</value>
   </data>
   <data name="Book1Desc" xml:space="preserve">
-    <value>وصف قصير هنا</value>
+    <value>كتاب عن العادات</value>
   </data>
   <data name="Book1Title" xml:space="preserve">
-    <value>عنوان الكتاب 1</value>
+    <value>العادات الذرية</value>
   </data>
   <data name="Book2Desc" xml:space="preserve">
-    <value>وصف قصير هنا</value>
+    <value>كتاب عن المال</value>
   </data>
   <data name="Book2Title" xml:space="preserve">
-    <value>عنوان الكتاب 2</value>
+    <value>الأب الغني و الأب الفقير</value>
   </data>
   <data name="Book3Desc" xml:space="preserve">
-    <value>وصف قصير هنا</value>
+    <value>قصة عن رمضان</value>
   </data>
   <data name="Book3Title" xml:space="preserve">
-    <value>عنوان الكتاب 3</value>
+    <value>ما المانع</value>
   </data>
   <data name="Book4Desc" xml:space="preserve">
-    <value>وصف قصير هنا</value>
+    <value>كتاب عن القيادة</value>
   </data>
   <data name="Book4Title" xml:space="preserve">
-    <value>عنوان الكتاب 4</value>
+    <value>تحدي القيادة</value>
   </data>
   <data name="BrowseBooks" xml:space="preserve">
     <value>تصفح الكتب</value>

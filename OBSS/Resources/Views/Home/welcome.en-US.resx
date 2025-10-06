@@ -124,28 +124,28 @@
     <value>OBSS Book Store is your trusted partner for exploring knowledge and imagination.</value>
   </data>
   <data name="Book1Desc" xml:space="preserve">
-    <value>Short description goes here.</value>
+    <value>Book about habits</value>
   </data>
   <data name="Book1Title" xml:space="preserve">
-    <value>Book Title 1</value>
+    <value>Atomic Habits</value>
   </data>
   <data name="Book2Desc" xml:space="preserve">
-    <value>Short description goes here.</value>
+    <value>Book about money</value>
   </data>
   <data name="Book2Title" xml:space="preserve">
-    <value>Book Title 2</value>
+    <value>Rich Dad Poor Dad</value>
   </data>
   <data name="Book3Desc" xml:space="preserve">
-    <value>Short description goes here.</value>
+    <value>A story about Ramadan</value>
   </data>
   <data name="Book3Title" xml:space="preserve">
-    <value>Book Title 3</value>
+    <value>The little Green Drum</value>
   </data>
   <data name="Book4Desc" xml:space="preserve">
-    <value>Short description goes here.</value>
+    <value>Book about  leadership</value>
   </data>
   <data name="Book4Title" xml:space="preserve">
-    <value>Book Title 4</value>
+    <value>The leadership Challenge</value>
   </data>
   <data name="BrowseBooks" xml:space="preserve">
     <value>Browse Books</value>

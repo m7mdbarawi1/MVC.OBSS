@@ -37,6 +37,7 @@
                         <div class="mb-3">
                             <label asp-for="Password" class="form-label">@Localizer["Password"]</label>
                             <input asp-for="Password" type="password" class="form-control" />
+                            <div class="form-text">Password must be at least 8 characters long.</div>
                             <span asp-validation-for="Password" class="text-danger"></span>
                         </div>
 
@@ -68,6 +69,7 @@
                         <div class="mb-3">
                             <label asp-for="ContactNumber" class="form-label">@Localizer["ContactNumber"]</label>
                             <input asp-for="ContactNumber" class="form-control" />
+                            <div class="form-text">Contact number must be exactly 10 digits.</div>
                             <span asp-validation-for="ContactNumber" class="text-danger"></span>
                         </div>
 

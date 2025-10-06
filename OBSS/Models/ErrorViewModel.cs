@@ -1,3 +1,4 @@
+
 namespace OBSS.Models
 {
     public class ErrorViewModel

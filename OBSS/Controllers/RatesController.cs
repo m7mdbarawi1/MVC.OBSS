@@ -22,19 +22,14 @@ namespace OBSS.Controllers
         // GET: Rates
         public async Task<IActionResult> Index()
         {
-            var rates = _context.Rates
-                .Include(r => r.Book)
-                .Include(r => r.User);
+            var rates = _context.Rates.Include(r => r.Book).Include(r => r.User);
             return View(await rates.ToListAsync());
         }
 
         // GET: Rates/Details
         public async Task<IActionResult> Details(int bookId, int userId)
         {
-            var rate = await _context.Rates
-                .Include(r => r.Book)
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.BookId == bookId && m.UserId == userId);
+            var rate = await _context.Rates.Include(r => r.Book).Include(r => r.User).FirstOrDefaultAsync(m => m.BookId == bookId && m.UserId == userId);
 
             if (rate == null) return NotFound();
             return View(rate);
@@ -56,8 +51,7 @@ namespace OBSS.Controllers
             if (ModelState.IsValid)
             {
                 // Check if this user already rated this book
-                var exists = await _context.Rates
-                    .AnyAsync(r => r.BookId == rate.BookId && r.UserId == rate.UserId);
+                var exists = await _context.Rates.AnyAsync(r => r.BookId == rate.BookId && r.UserId == rate.UserId);
 
                 if (exists)
                 {
@@ -76,12 +70,10 @@ namespace OBSS.Controllers
             return View(rate);
         }
 
-
         // GET: Rates/Edit
         public async Task<IActionResult> Edit(int bookId, int userId)
         {
-            var rate = await _context.Rates
-                .FirstOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId);
+            var rate = await _context.Rates.FirstOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId);
             if (rate == null) return NotFound();
 
             ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookTitle", rate.BookId);
@@ -116,10 +108,7 @@ namespace OBSS.Controllers
         // GET: Rates/Delete
         public async Task<IActionResult> Delete(int bookId, int userId)
         {
-            var rate = await _context.Rates
-                .Include(r => r.Book)
-                .Include(r => r.User)
-                .FirstOrDefaultAsync(m => m.BookId == bookId && m.UserId == userId);
+            var rate = await _context.Rates.Include(r => r.Book).Include(r => r.User).FirstOrDefaultAsync(m => m.BookId == bookId && m.UserId == userId);
 
             if (rate == null) return NotFound();
 
@@ -131,8 +120,7 @@ namespace OBSS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int bookId, int userId)
         {
-            var rate = await _context.Rates
-                .FirstOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId);
+            var rate = await _context.Rates.FirstOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId);
 
             if (rate != null)
             {
@@ -176,20 +164,15 @@ namespace OBSS.Controllers
             }
 
             // ✅ Force client evaluation for Avg
-            var avgRating = _context.Rates
-                .Where(r => r.BookId == bookId)
-                .AsEnumerable()
-                .Select(r => r.Rate1)
-                .DefaultIfEmpty(0)
-                .Average();
+            var avgRating = _context.Rates.Where(r => r.BookId == bookId).AsEnumerable().Select(r => r.Rate1).DefaultIfEmpty(0).Average();
 
             return Json(new { success = true, rating, avgRating = Math.Round(avgRating, 1) });
         }
-
 
         private bool RateExists(int bookId, int userId)
         {
             return _context.Rates.Any(e => e.BookId == bookId && e.UserId == userId);
         }
+    
     }
 }

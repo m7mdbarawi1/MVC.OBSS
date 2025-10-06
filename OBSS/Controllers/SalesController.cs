@@ -54,8 +54,6 @@ namespace OBSS.Controllers
         }
 
         // POST: Sales/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("SaleId,UserId,SaleDate")] Sale sale)
@@ -79,6 +77,7 @@ namespace OBSS.Controllers
             }
 
             var sale = await _context.Sales.FindAsync(id);
+
             if (sale == null)
             {
                 return NotFound();
@@ -88,8 +87,6 @@ namespace OBSS.Controllers
         }
 
         // POST: Sales/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("SaleId,UserId,SaleDate")] Sale sale)
@@ -155,27 +152,26 @@ namespace OBSS.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+       public async Task<IActionResult> DownloadReport()
+       {
+            var sales = await _context.Sales.Include(s => s.User).ToListAsync();
 
-public async Task<IActionResult> DownloadReport()
-    {
-        var sales = await _context.Sales.Include(s => s.User).ToListAsync();
+            var sb = new StringBuilder();
+            sb.AppendLine("SaleId,UserId,SaleDate");
 
-        var sb = new StringBuilder();
-        sb.AppendLine("SaleId,UserId,SaleDate");
+            foreach (var sale in sales)
+            {
+                sb.AppendLine($"{sale.SaleId},{sale.UserId},{sale.SaleDate:yyyy-MM-dd}");
+            }
 
-        foreach (var sale in sales)
-        {
-            sb.AppendLine($"{sale.SaleId},{sale.UserId},{sale.SaleDate:yyyy-MM-dd}");
+            var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return File(bytes, "text/csv", "SalesReport.csv");
         }
 
-        var bytes = Encoding.UTF8.GetBytes(sb.ToString());
-        return File(bytes, "text/csv", "SalesReport.csv");
-    }
-
-
-    private bool SaleExists(int id)
-        {
-            return _context.Sales.Any(e => e.SaleId == id);
-        }
+       private bool SaleExists(int id)
+       {
+                return _context.Sales.Any(e => e.SaleId == id);
+       }
+    
     }
 }

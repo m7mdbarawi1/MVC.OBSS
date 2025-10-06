@@ -36,4 +36,5 @@ public partial class Book
     public virtual ICollection<Rate> Rates { get; set; } = new List<Rate>();
 
     public virtual ICollection<SalesDetail> SalesDetails { get; set; } = new List<SalesDetail>();
+ 
 }

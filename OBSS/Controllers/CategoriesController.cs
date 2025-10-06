@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,12 +21,14 @@ namespace OBSS.Controllers
         }
 
         // GET: Categories
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Categories.ToListAsync());
         }
 
         // GET: Categories/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -43,28 +46,42 @@ namespace OBSS.Controllers
         }
 
         // GET: Categories/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
         // POST: Categories/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Categories/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CategoryId,CategoryDesc")] Category category)
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Create([Bind("CategoryDesc")] Category category)
         {
             if (ModelState.IsValid)
             {
+                // Check for duplicate category
+                bool exists = await _context.Categories
+                    .AnyAsync(c => c.CategoryDesc.ToLower() == category.CategoryDesc.ToLower());
+
+                if (exists)
+                {
+                    ModelState.AddModelError("CategoryDesc", "This category already exists.");
+                    return View(category);
+                }
+
+                // Add new category
                 _context.Add(category);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(category);
         }
 
         // GET: Categories/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -81,10 +98,9 @@ namespace OBSS.Controllers
         }
 
         // POST: Categories/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("CategoryId,CategoryDesc")] Category category)
         {
             if (id != category.CategoryId)
@@ -94,6 +110,17 @@ namespace OBSS.Controllers
 
             if (ModelState.IsValid)
             {
+                // Check for duplicate category, excluding the current record
+                bool exists = await _context.Categories
+                    .AnyAsync(c => c.CategoryDesc.ToLower() == category.CategoryDesc.ToLower()
+                                && c.CategoryId != category.CategoryId);
+
+                if (exists)
+                {
+                    ModelState.AddModelError("CategoryDesc", "This category already exists.");
+                    return View(category);
+                }
+
                 try
                 {
                     _context.Update(category);
@@ -112,11 +139,13 @@ namespace OBSS.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
             return View(category);
         }
 
+
         // GET: Categories/Delete/5
-        // GET: Categories/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -124,9 +153,7 @@ namespace OBSS.Controllers
                 return NotFound();
             }
 
-            var category = await _context.Categories
-                .Include(c => c.Books) // load related books
-                .FirstOrDefaultAsync(m => m.CategoryId == id);
+            var category = await _context.Categories.Include(c => c.Books).FirstOrDefaultAsync(m => m.CategoryId == id);
 
             if (category == null)
             {
@@ -139,21 +166,19 @@ namespace OBSS.Controllers
             return View(category);
         }
 
-
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories
-                .Include(c => c.Books)  // assumes navigation property exists
-                .FirstOrDefaultAsync(c => c.CategoryId == id);
+            var category = await _context.Categories.Include(c => c.Books).FirstOrDefaultAsync(c => c.CategoryId == id);
 
             if (category == null) return NotFound();
 
             if (category.Books.Any())
             {
                 ModelState.AddModelError("", "Cannot delete this category because it has related books.");
-                return View(category); // Show the same view with the error
+                return View(category);
             }
 
             _context.Categories.Remove(category);
@@ -161,7 +186,6 @@ namespace OBSS.Controllers
 
             return RedirectToAction(nameof(Index));
         }
-
 
         private bool CategoryExists(int id)
         {

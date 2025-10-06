@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OBSS.Data;
@@ -19,24 +20,20 @@ namespace OBSS.Controllers
         }
 
         // GET: Books
+        [Authorize(Roles = "Admin")] // Only Admin can see all books
         public async Task<IActionResult> Index()
         {
-            var books = await _context.Books
-                .Include(b => b.Category)
-                .Include(b => b.Rates)   // 👈 For average rating
-                .ToListAsync();
-
+            var books = await _context.Books.Include(b => b.Category).Include(b => b.Rates).ToListAsync();
             return View(books);
         }
 
         // GET: Books/Details/5
+        [AllowAnonymous] // Anyone can view book details
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
-            var book = await _context.Books
-                .Include(b => b.Category)
-                .FirstOrDefaultAsync(m => m.BookId == id);
+            var book = await _context.Books.Include(b => b.Category).FirstOrDefaultAsync(m => m.BookId == id);
 
             if (book == null) return NotFound();
 
@@ -44,6 +41,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Books/Create
+        [Authorize(Roles = "Admin")] // Only Admin can access create page
         public async Task<IActionResult> Create()
         {
             var categories = await _context.Categories.ToListAsync();
@@ -52,8 +50,8 @@ namespace OBSS.Controllers
         }
 
         // POST: Books/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // Only Admin can submit
+        [HttpPost, ValidateAntiForgeryToken] // CSRF protected
         public async Task<IActionResult> Create(Book book, IFormFile? coverImage)
         {
             if (ModelState.IsValid)
@@ -86,6 +84,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Books/Edit/5
+        [Authorize(Roles = "Admin")] // Only Admin can access edit page
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
@@ -99,8 +98,8 @@ namespace OBSS.Controllers
         }
 
         // POST: Books/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // Only Admin can submit changes
+        [HttpPost, ValidateAntiForgeryToken] // CSRF protected
         public async Task<IActionResult> Edit(int id, Book updatedBook, IFormFile? coverImage)
         {
             if (id != updatedBook.BookId) return NotFound();
@@ -156,13 +155,12 @@ namespace OBSS.Controllers
         }
 
         // GET: Books/Delete/5
+        [Authorize(Roles = "Admin")] // Only Admin can access delete confirmation
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
 
-            var book = await _context.Books
-                .Include(b => b.Category)
-                .FirstOrDefaultAsync(m => m.BookId == id);
+            var book = await _context.Books.Include(b => b.Category).FirstOrDefaultAsync(m => m.BookId == id);
 
             if (book == null) return NotFound();
 
@@ -170,15 +168,11 @@ namespace OBSS.Controllers
         }
 
         // POST: Books/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")] // Only Admin can perform deletion
+        [HttpPost, ActionName("Delete"), ValidateAntiForgeryToken] // CSRF protected
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var book = await _context.Books
-                .Include(b => b.Rates)
-                .Include(b => b.CartDetails)
-                .Include(b => b.SalesDetails)
-                .FirstOrDefaultAsync(b => b.BookId == id);
+            var book = await _context.Books.Include(b => b.Rates).Include(b => b.CartDetails).Include(b => b.SalesDetails).FirstOrDefaultAsync(b => b.BookId == id);
 
             if (book != null)
             {
@@ -194,23 +188,18 @@ namespace OBSS.Controllers
         }
 
         // Books with zero stock
+        [Authorize(Roles = "Admin")] // Only Admin can see required books
         public async Task<IActionResult> RequiredBooks()
         {
-            var requiredBooks = await _context.Books
-                .Include(b => b.Category)
-                .Where(b => b.QuantityInStore == 0)
-                .ToListAsync();
-
+            var requiredBooks = await _context.Books.Include(b => b.Category).Where(b => b.QuantityInStore == 0).ToListAsync();
             return View(requiredBooks);
         }
 
         // Download report for required books
+        [Authorize(Roles = "Admin")] // Only Admin can download the report
         public async Task<IActionResult> DownloadRequiredBooksReport()
         {
-            var requiredBooks = await _context.Books
-                .Include(b => b.Category)
-                .Where(b => b.QuantityInStore == 0)
-                .ToListAsync();
+            var requiredBooks = await _context.Books.Include(b => b.Category).Where(b => b.QuantityInStore == 0).ToListAsync();
 
             var sb = new StringBuilder();
             sb.AppendLine("BookId,Title,Author,Category,Quantity");
