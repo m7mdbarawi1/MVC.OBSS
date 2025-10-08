@@ -96,4 +96,19 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        // Restrict inputs for names and username to English letters and numbers only
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputs = ["UserName", "FirstName", "LastName"];
+            inputs.forEach(name => {
+                const input = document.querySelector(`input[name='${name}']`);
+                if (input) {
+                    input.addEventListener("input", function () {
+                        this.value = this.value.replace(/[^a-z0-9]/gi, '');
+                    });
+                }
+            });
+        });
+    </script>
 }

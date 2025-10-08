@@ -24,7 +24,7 @@
                         <input type="hidden" asp-for="TypeId" />
 
                         <div class="mb-3">
-                            <label asp-for="TypeDesc" class="form-label"></label>
+                            <label asp-for="TypeDesc" class="form-label">@Localizer["UserTypeDescription"]</label>
                             <input asp-for="TypeDesc" class="form-control" />
                             <span asp-validation-for="TypeDesc" class="text-danger"></span>
                         </div>
@@ -49,4 +49,16 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        // Restrict TypeDesc input to English letters and numbers only
+        document.addEventListener("DOMContentLoaded", function () {
+            const typeInput = document.querySelector("input[name='TypeDesc']");
+            if (typeInput) {
+                typeInput.addEventListener("input", function () {
+                    this.value = this.value.replace(/[^a-z0-9]/gi, '');
+                });
+            }
+        });
+    </script>
 }

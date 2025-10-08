@@ -34,8 +34,8 @@
                     <!-- Title, Category, Price, Add to Cart -->
                     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-2">
                         <div class="text-start">
-                            <h3 class="fw-bold mb-1">@Model.BookTitle</h3>
-                            <p class="mb-0 text-muted">@Localizer["Category"]: @Model.Category?.CategoryDesc</p>
+                            <h3 class="fw-bold mb-1 english-only">@Model.BookTitle</h3>
+                            <p class="mb-0 text-muted english-only">@Localizer["Category"]: @Model.Category?.CategoryDesc</p>
                             <p class="mb-0 fw-bold text-success">$@Model.Price</p>
                         </div>
                         <form asp-controller="Carts" asp-action="AddToCart" method="post" class="d-inline">
@@ -50,22 +50,22 @@
                     <!-- Other Book Details -->
                     <dl class="row text-start mb-0">
                         <dt class="col-sm-4 fw-bold">@Localizer["Subject"]</dt>
-                        <dd class="col-sm-8">@Model.Subject</dd>
+                        <dd class="col-sm-8 english-only">@Model.Subject</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Author"]</dt>
-                        <dd class="col-sm-8">@Model.Author</dd>
+                        <dd class="col-sm-8 english-only">@Model.Author</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Publish"]</dt>
                         <dd class="col-sm-8">@Model.PublishDate?.ToString("d")</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Publisher"]</dt>
-                        <dd class="col-sm-8">@Model.PublishingHouse</dd>
+                        <dd class="col-sm-8 english-only">@Model.PublishingHouse</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Quantity"]</dt>
                         <dd class="col-sm-8">@Model.QuantityInStore</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Description"]</dt>
-                        <dd class="col-sm-8">@Model.Description</dd>
+                        <dd class="col-sm-8 english-only">@Model.Description</dd>
                     </dl>
 
                 </div>
@@ -78,3 +78,15 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Restrict displayed or dynamic text to English letters, numbers, and common punctuation
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.english-only').forEach(element => {
+                const clean = element.textContent.replace(/[^A-Za-z0-9\s.,'"\-!?:;()]/g, '');
+                element.textContent = clean;
+            });
+        });
+    </script>
+}

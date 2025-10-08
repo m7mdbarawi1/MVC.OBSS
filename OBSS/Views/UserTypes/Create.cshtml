@@ -21,11 +21,7 @@
                     <form asp-action="Create">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <div class="mb-3">
-                            <label asp-for="TypeId" class="form-label"></label>
-                            <input asp-for="TypeId" class="form-control" />
-                            <span asp-validation-for="TypeId" class="text-danger"></span>
-                        </div>
+                        <!-- TypeId should NOT be shown; it is auto-generated -->
 
                         <div class="mb-3">
                             <label asp-for="TypeDesc" class="form-label"></label>
@@ -50,7 +46,17 @@
 </div>
 
 @section Scripts {
-    @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+
+    <script>
+        // Restrict input to English letters and numbers only
+        document.addEventListener("DOMContentLoaded", function () {
+            const typeInput = document.querySelector("input[name='TypeDesc']");
+            if (typeInput) {
+                typeInput.addEventListener("input", function () {
+                    this.value = this.value.replace(/[^a-z0-9]/gi, '');
+                });
+            }
+        });
+    </script>
 }

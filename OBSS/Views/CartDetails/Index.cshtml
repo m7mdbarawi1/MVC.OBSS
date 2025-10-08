@@ -10,9 +10,6 @@
     <div class="row mb-4">
         <div class="col-12 d-flex flex-column flex-md-row justify-content-between align-items-md-center">
             <h1 class="page-title mb-3 mb-md-0">@Localizer["CartDetails"]</h1>
-            <a asp-action="Create" class="btn btn-primary">
-                <i class="bi bi-plus-circle"></i> @Localizer["CreateNew"]
-            </a>
         </div>
     </div>
 
@@ -21,7 +18,7 @@
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <input type="text" id="searchInput" class="form-control" placeholder="@Localizer["SearchCartDetails"]">
+                    <input type="text" id="searchInput" class="form-control english-only" placeholder="@Localizer["SearchCartDetails"]">
                 </div>
             </div>
         </div>
@@ -53,17 +50,9 @@
                                             <td>@Localizer["Cart"] #@item.Cart?.CartId</td>
                                             <td class="text-center">
                                                 <div class="d-flex flex-wrap justify-content-center gap-2">
-                                                    <a asp-action="Edit" asp-route-cartId="@item.CartId" asp-route-bookId="@item.BookId"
-                                                       class="btn btn-secondary btn-sm">
-                                                        <i class="bi bi-pencil-square"></i> @Localizer["Edit"]
-                                                    </a>
                                                     <a asp-action="Details" asp-route-cartId="@item.CartId" asp-route-bookId="@item.BookId"
                                                        class="btn btn-accent btn-sm">
                                                         <i class="bi bi-info-circle"></i> @Localizer["Details"]
-                                                    </a>
-                                                    <a asp-action="Delete" asp-route-cartId="@item.CartId" asp-route-bookId="@item.BookId"
-                                                       class="btn btn-danger btn-sm">
-                                                        <i class="bi bi-trash"></i> @Localizer["Delete"]
                                                     </a>
                                                 </div>
                                             </td>
@@ -91,8 +80,11 @@
             const searchInput = document.getElementById("searchInput");
             const rows = document.querySelectorAll("#cartDetailsTable tr");
 
+            // ✅ Allow only English letters, numbers, and spaces
             searchInput.addEventListener("input", function () {
-                const term = searchInput.value.toLowerCase();
+                this.value = this.value.replace(/[^A-Za-z0-9\s]/g, '');
+                const term = this.value.toLowerCase();
+
                 rows.forEach(row => {
                     const text = row.textContent.toLowerCase();
                     row.style.display = text.includes(term) ? "" : "none";

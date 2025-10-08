@@ -50,4 +50,13 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        // Restrict input to English letters and numbers only
+        document.addEventListener("DOMContentLoaded", function () {
+            const categoryInput = document.querySelector('input[name="CategoryDesc"]');
+            categoryInput.addEventListener("input", function () {
+                this.value = this.value.replace(/[^a-z0-9 ]/gi, '');
+            });
+        });
+    </script>
 }

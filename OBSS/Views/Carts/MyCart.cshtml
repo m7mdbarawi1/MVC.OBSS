@@ -17,22 +17,22 @@
     <!-- Alerts -->
     @if (TempData["Info"] != null)
     {
-        <div class="alert alert-info">@TempData["Info"]</div>
+        <div class="alert alert-info text-center">@TempData["Info"]</div>
     }
     @if (TempData["Error"] != null)
     {
-        <div class="alert alert-danger">@TempData["Error"]</div>
+        <div class="alert alert-danger text-center">@TempData["Error"]</div>
     }
     @if (TempData["Success"] != null)
     {
-        <div class="alert alert-success">@TempData["Success"]</div>
+        <div class="alert alert-success text-center">@TempData["Success"]</div>
     }
 
     <!-- Empty Cart -->
     @if (!Model.Any())
     {
         <div class="card shadow-sm">
-            <div class="card-body text-center text-muted">
+            <div class="card-body text-center text-muted py-4">
                 @Localizer["CartEmpty"]
             </div>
         </div>
@@ -56,7 +56,7 @@
                         <tbody>
                             @foreach (var item in Model)
                             {
-                                <tr data-book-id="@item.BookId">
+                                <tr data-book-id="@item.BookId" class="table-row-hover">
                                     <td>@item.Book.BookTitle</td>
                                     <td>@item.Book.Author</td>
                                     <td>@item.Book.Category?.CategoryDesc</td>
@@ -65,7 +65,7 @@
                                                min="1"
                                                max="@item.Book.QuantityInStore"
                                                value="@item.Quantity"
-                                               class="form-control form-control-sm qty-input text-center" />
+                                               class="form-control form-control-sm qty-input english-only text-center" />
                                     </td>
                                     <td class="item-price">@((item.Book.Price * item.Quantity).ToString("C"))</td>
                                     <td class="text-center">
@@ -86,8 +86,8 @@
         </div>
 
         <!-- Total + Purchase -->
-        <div class="d-flex justify-content-between align-items-center mt-3">
-            <h4>@Localizer["Total"]: <span id="totalPrice">@totalPrice.ToString("C")</span></h4>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-2">
+            <h4 class="mb-0">@Localizer["Total"]: <span id="totalPrice">@totalPrice.ToString("C")</span></h4>
             <form asp-action="Purchase" method="post">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="btn btn-success btn-lg">
@@ -101,6 +101,7 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        // Live quantity update via AJAX
         $(".qty-input").on("input", function () {
             let row = $(this).closest("tr");
             let bookId = row.data("book-id");
@@ -111,6 +112,15 @@
                     row.find(".item-price").text(data.itemPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
                     $("#totalPrice").text(data.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
                 }
+            });
+        });
+
+        // Restrict quantity input to English digits only
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll("input.english-only").forEach(input => {
+                input.addEventListener("input", function () {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
             });
         });
     </script>

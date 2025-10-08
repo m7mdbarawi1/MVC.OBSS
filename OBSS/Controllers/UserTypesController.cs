@@ -52,13 +52,21 @@ namespace OBSS.Controllers
         // POST: UserTypes/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TypeId,TypeDesc")] UserType userType)
+        public async Task<IActionResult> Create([Bind("TypeDesc")] UserType userType) // 🚀 Removed TypeId
         {
             if (ModelState.IsValid)
             {
-                _context.Add(userType);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    _context.Add(userType);
+                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Handle duplicate TypeDesc gracefully (since you made it UNIQUE in DB)
+                    ModelState.AddModelError("", "That user type already exists.");
+                }
             }
             return View(userType);
         }
@@ -87,30 +95,32 @@ namespace OBSS.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("TypeId,TypeDesc")] UserType userType)
         {
             if (id != userType.TypeId)
-            {
                 return NotFound();
-            }
 
             if (ModelState.IsValid)
             {
+                // ✅ Check for duplicate TypeDesc before saving
+                if (_context.UserTypes.Any(u => u.TypeDesc == userType.TypeDesc && u.TypeId != userType.TypeId))
+                {
+                    ModelState.AddModelError("TypeDesc", "This type description already exists.");
+                    return View(userType);
+                }
+
                 try
                 {
                     _context.Update(userType);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
                     if (!UserTypeExists(userType.TypeId))
-                    {
                         return NotFound();
-                    }
                     else
-                    {
                         throw;
-                    }
                 }
-                return RedirectToAction(nameof(Index));
             }
+
             return View(userType);
         }
 

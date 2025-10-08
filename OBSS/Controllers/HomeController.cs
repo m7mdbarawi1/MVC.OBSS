@@ -33,6 +33,16 @@ namespace OBSS.Controllers
             return View();
         }
 
+        public IActionResult aboutUs()
+        {
+            return View();
+        }
+
+        public IActionResult Careers()
+        {
+            return View();
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

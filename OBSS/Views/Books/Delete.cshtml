@@ -24,19 +24,19 @@
                 <div class="card-body">
                     <dl class="row mb-0">
                         <dt class="col-sm-4 fw-bold">@Localizer["Subject"]</dt>
-                        <dd class="col-sm-8">@Model.Subject</dd>
+                        <dd class="col-sm-8 english-only">@Model.Subject</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Title"]</dt>
-                        <dd class="col-sm-8">@Model.BookTitle</dd>
+                        <dd class="col-sm-8 english-only">@Model.BookTitle</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Author"]</dt>
-                        <dd class="col-sm-8">@Model.Author</dd>
+                        <dd class="col-sm-8 english-only">@Model.Author</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Publish"]</dt>
                         <dd class="col-sm-8">@Model.PublishDate?.ToString("d")</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Publisher"]</dt>
-                        <dd class="col-sm-8">@Model.PublishingHouse</dd>
+                        <dd class="col-sm-8 english-only">@Model.PublishingHouse</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Quantity"]</dt>
                         <dd class="col-sm-8">@Model.QuantityInStore</dd>
@@ -54,13 +54,13 @@
                         </dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Description"]</dt>
-                        <dd class="col-sm-8">@Model.Description</dd>
+                        <dd class="col-sm-8 english-only">@Model.Description</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Price"]</dt>
                         <dd class="col-sm-8">$@Model.Price</dd>
 
                         <dt class="col-sm-4 fw-bold">@Localizer["Category"]</dt>
-                        <dd class="col-sm-8">@Model.Category?.CategoryDesc</dd>
+                        <dd class="col-sm-8 english-only">@Model.Category?.CategoryDesc</dd>
                     </dl>
                 </div>
                 <div class="card-footer d-flex justify-content-end gap-2">
@@ -78,3 +78,20 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // Enforce English-only text on dynamically loaded or editable fields
+        document.querySelectorAll('.english-only').forEach(element => {
+            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                element.addEventListener('input', () => {
+                    element.value = element.value.replace(/[^A-Za-z0-9\s.,'"\-!?:;()]/g, '');
+                });
+            } else {
+                // For non-editable text (display), clean content
+                const text = element.textContent;
+                element.textContent = text.replace(/[^A-Za-z0-9\s.,'"\-!?:;()]/g, '');
+            }
+        });
+    </script>
+}

@@ -210,4 +210,10 @@
   <data name="Arabic" xml:space="preserve">
     <value>العربية</value>
   </data>
+  <data name="FollowUs" xml:space="preserve">
+    <value>تابعنا</value>
+  </data>
+  <data name="ConnectWithUs" xml:space="preserve">
+    <value>تواصل معنا على وسائل التواصل الاجتماعي</value>
+  </data>
 </root>

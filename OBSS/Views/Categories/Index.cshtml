@@ -88,7 +88,7 @@
                 const term = searchInput.value.toLowerCase();
                 rows.forEach(row => {
                     const text = row.textContent.toLowerCase();
-                    row.style.display = text.includes(term) ? "" : "none";
+                    row.style.display = text.replace(/[^a-z0-9]/gi,'').includes(term.replace(/[^a-z0-9]/gi,'')) ? "" : "none";
                 });
             });
         });

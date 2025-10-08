@@ -32,14 +32,9 @@
                         <dd class="col-sm-8">#@Model.Cart.CartId</dd>
                     </dl>
                 </div>
-                <div class="card-footer d-flex justify-content-end gap-2">
-                    <a asp-action="Edit"
-                       asp-route-cartId="@Model.CartId"
-                       asp-route-bookId="@Model.BookId"
-                       class="btn btn-secondary">
-                        <i class="bi bi-pencil-square"></i> @Localizer["Edit"]
-                    </a>
-                    <a asp-action="Index" class="btn btn-primary">
+
+                <div class="card-footer text-center">
+                    <a asp-action="Index" class="btn btn-primary btn-sm">
                         <i class="bi bi-arrow-left-circle"></i> @Localizer["Back"]
                     </a>
                 </div>
@@ -47,3 +42,16 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <!-- Optional English-only input restriction for consistency -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll("input.english-only").forEach(input => {
+                input.addEventListener("input", function () {
+                    this.value = this.value.replace(/[^A-Za-z0-9\s]/g, '');
+                });
+            });
+        });
+    </script>
+}

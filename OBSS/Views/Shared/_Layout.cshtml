@@ -30,7 +30,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom shadow-sm fixed-top" id="mainNavbar">
             <div class="container-fluid">
                 <!-- Logo -->
-                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Home" asp-action="Welcome">
+                <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Account" asp-action="HomeRedirect">
                     <img src="~/OBSS-LOGO.png" alt="OBSS Logo" height="40" class="me-2" />
                 </a>
 
@@ -44,12 +44,6 @@
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
-                            <!-- Home (role-based redirect) -->
-                            <a class="nav-link text-white fw-bold" asp-controller="Account" asp-action="HomeRedirect">
-                                @Localizer["Home"]
-                            </a>
-                            <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">@Localizer["ExploreBooks"]</a></li>
-
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item"><a class="nav-link" asp-controller="Books" asp-action="Index">@Localizer["Books"]</a></li>
@@ -65,6 +59,7 @@
                             }
                             else if (User.IsInRole("Customer"))
                             {
+                                <li class="nav-item"><a class="nav-link" asp-controller="Home" asp-action="Index">@Localizer["ExploreBooks"]</a></li>
                                 <li class="nav-item"><a class="nav-link" asp-controller="Carts" asp-action="MyCart">@Localizer["MyCart"]</a></li>
                             }
                         }
@@ -144,28 +139,62 @@
             </div>
         </div>
     </main>
+
+    <!-- Chatbot Floating Button -->
+    <div id="chatbot-container">
+        <button id="chatbot-toggle" class="btn btn-primary rounded-circle shadow-lg">
+            <i id="chatbot-icon" class="bi bi-chat-dots"></i>
+        </button>
+
+        <div id="chatbot-box" class="card shadow-lg p-3" style="display:none;">
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                <h6 class="mb-0">@Localizer["Chatbot"]</h6>
+                <button id="chatbot-close" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
+            <div id="chatbot-messages" class="chat-messages mb-3"></div>
+            <div class="input-group">
+                <input type="text" id="chatbot-input" class="form-control" placeholder="@Localizer["TypeMessage"]..." />
+                <button id="chatbot-send" class="btn btn-primary">
+                    <i class="bi bi-send"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
         <footer class="footer-custom mt-auto pt-5 pb-3">
         <div class="container">
             <div class="row g-4 justify-content-center text-center">
-                <!-- Get in Touch -->
+
+                <!-- Follow Us / Social Media -->
                 <div class="col-md-4 d-flex flex-column align-items-center">
-                    <h5 class="fw-bold">@Localizer["GetInTouch"]</h5>
-                    <form class="d-flex flex-column gap-2 mt-3 align-items-center">
-                        <input type="email" class="form-control text-center" placeholder="@Localizer["YourEmail"]" required
-                               style="max-width: 250px;" />
-                        <button type="submit" class="btn btn-accent btn-sm">@Localizer["Send"]</button>
-                    </form>
-                    <p class="small mt-2">@Localizer["SubscribeNewsletter"]</p>
+                    <h5 class="fw-bold">@Localizer["FollowUs"]</h5>
+                    <div class="d-flex gap-3 mt-3">
+                        <!-- LinkedIn -->
+                        <a href="https://www.linkedin.com/in/mohammadbarawi/" target="_blank" class="text-decoration-none social-icon">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/yourprofile" target="_blank" class="text-decoration-none social-icon">
+                            <i class="bi bi-instagram"></i>
+                        </a>
+                        <!-- YouTube -->
+                        <a href="https://www.youtube.com/yourchannel" target="_blank" class="text-decoration-none social-icon">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                    </div>
+                    <p class="small mt-2">@Localizer["ConnectWithUs"]</p>
                 </div>
 
                 <!-- Who We Are -->
                 <div class="col-md-3 d-flex flex-column align-items-center">
                     <h6 class="fw-bold">@Localizer["WhoWeAre"]</h6>
                     <ul class="list-unstyled mt-3 text-center">
-                        <li><a href="#" class="footer-link">@Localizer["AboutUs"]</a></li>
-                        <li><a href="#" class="footer-link">@Localizer["News"]</a></li>
-                        <li><a href="#" class="footer-link">@Localizer["Careers"]</a></li>
-                        <li><a href="#" class="footer-link">@Localizer["Offices"]</a></li>
+                        <li><a href="/Home/AboutUs" class="footer-link">@Localizer["AboutUs"]</a></li>
+                        <li><a href="/Home/Careers" class="footer-link">@Localizer["Careers"]</a></li>
+                    </ul>
                     </ul>
                 </div>
 
@@ -233,6 +262,54 @@
             initTheme();
         });
     </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const toggleBtn = document.getElementById('chatbot-toggle');
+            const chatBox = document.getElementById('chatbot-box');
+            const closeBtn = document.getElementById('chatbot-close');
+            const sendBtn = document.getElementById('chatbot-send');
+            const input = document.getElementById('chatbot-input');
+            const messages = document.getElementById('chatbot-messages');
+            const icon = document.getElementById('chatbot-icon');
+
+            // Open/Close chatbot
+            toggleBtn.addEventListener('click', () => {
+                chatBox.style.display = chatBox.style.display === 'none' ? 'block' : 'none';
+                icon.classList.toggle('bi-chat-dots');
+                icon.classList.toggle('bi-x-circle');
+            });
+
+            closeBtn.addEventListener('click', () => {
+                chatBox.style.display = 'none';
+                icon.classList.add('bi-chat-dots');
+                icon.classList.remove('bi-x-circle');
+            });
+
+            // Send message
+            function addMessage(sender, text) {
+                const div = document.createElement('div');
+                div.classList.add('chat-message', sender);
+                div.textContent = text;
+                messages.appendChild(div);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function sendMessage() {
+                const text = input.value.trim();
+                if (!text) return;
+                addMessage('user', text);
+                input.value = '';
+                setTimeout(() => addMessage('bot', "🤖 " + "Hello Dear! How can I help you?"), 400);
+            }
+
+            sendBtn.addEventListener('click', sendMessage);
+            input.addEventListener('keypress', e => {
+                if (e.key === 'Enter') sendMessage();
+            });
+        });
+    </script>
+
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

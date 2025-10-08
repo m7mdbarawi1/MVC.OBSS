@@ -30,7 +30,10 @@
 
                         <div class="mb-3">
                             <label asp-for="UserName" class="form-label">@Localizer["Username"]</label>
-                            <input asp-for="UserName" class="form-control" />
+                            <input asp-for="UserName" class="form-control"
+                                   pattern="^[A-Za-z0-9 .]+$"
+                                   title="Only English letters, numbers, spaces, and periods are allowed (no Arabic characters)." />
+                            <div class="form-text">Only English letters, numbers, spaces, and periods are allowed.</div>
                             <span asp-validation-for="UserName" class="text-danger"></span>
                         </div>
 
@@ -43,13 +46,19 @@
 
                         <div class="mb-3">
                             <label asp-for="FirstName" class="form-label">@Localizer["FirstName"]</label>
-                            <input asp-for="FirstName" class="form-control" />
+                            <input asp-for="FirstName" class="form-control"
+                                   pattern="^[A-Za-z .]+$"
+                                   title="Only English letters, spaces, and periods are allowed (no Arabic characters)." />
+                            <div class="form-text">Only English letters, spaces, and periods are allowed.</div>
                             <span asp-validation-for="FirstName" class="text-danger"></span>
                         </div>
 
                         <div class="mb-3">
                             <label asp-for="LastName" class="form-label">@Localizer["LastName"]</label>
-                            <input asp-for="LastName" class="form-control" />
+                            <input asp-for="LastName" class="form-control"
+                                   pattern="^[A-Za-z .]+$"
+                                   title="Only English letters, spaces, and periods are allowed (no Arabic characters)." />
+                            <div class="form-text">Only English letters, spaces, and periods are allowed.</div>
                             <span asp-validation-for="LastName" class="text-danger"></span>
                         </div>
 
@@ -68,7 +77,9 @@
 
                         <div class="mb-3">
                             <label asp-for="ContactNumber" class="form-label">@Localizer["ContactNumber"]</label>
-                            <input asp-for="ContactNumber" class="form-control" />
+                            <input asp-for="ContactNumber" class="form-control"
+                                   pattern="^\d{10}$"
+                                   title="Contact number must be exactly 10 digits" />
                             <div class="form-text">Contact number must be exactly 10 digits.</div>
                             <span asp-validation-for="ContactNumber" class="text-danger"></span>
                         </div>
@@ -100,4 +111,46 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const usernameInput = document.getElementById('UserName');
+            const firstNameInput = document.getElementById('FirstName');
+            const lastNameInput = document.getElementById('LastName');
+            const contactInput = document.getElementById('ContactNumber');
+
+            // Regex for FirstName and LastName: Allows English letters, spaces, and periods. Implicitly disallows Arabic.
+            const regexName = /[^A-Za-z .]/g;
+
+            // Regex for UserName: Allows English letters, numbers, spaces, and periods. Implicitly disallows Arabic.
+            const regexUsername = /[^A-Za-z0-9 .]/g;
+
+            // Regex for ContactNumber: Allows only digits.
+            const regexContact = /\D/g;
+
+            if(firstNameInput) {
+                firstNameInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(regexName, '');
+                });
+            }
+
+            if(lastNameInput) {
+                lastNameInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(regexName, '');
+                });
+            }
+
+            if(usernameInput) {
+                usernameInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(regexUsername, '');
+                });
+            }
+
+            if(contactInput) {
+                contactInput.addEventListener('input', (e) => {
+                    e.target.value = e.target.value.replace(regexContact, '');
+                });
+            }
+        });
+    </script>
 }

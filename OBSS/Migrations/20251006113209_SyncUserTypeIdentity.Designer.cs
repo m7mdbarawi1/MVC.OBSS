@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OBSS.Data;
 
@@ -11,9 +12,11 @@ using OBSS.Data;
 namespace OBSS.Migrations
 {
     [DbContext(typeof(OBSSContext))]
-    partial class OBSSContextModelSnapshot : ModelSnapshot
+    [Migration("20251006113209_SyncUserTypeIdentity")]
+    partial class SyncUserTypeIdentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
