@@ -28,7 +28,6 @@
         <div class="alert alert-success text-center">@TempData["Success"]</div>
     }
 
-    <!-- Empty Cart -->
     @if (!Model.Any())
     {
         <div class="card shadow-sm">
@@ -56,7 +55,7 @@
                         <tbody>
                             @foreach (var item in Model)
                             {
-                                <tr data-book-id="@item.BookId" class="table-row-hover">
+                                <tr data-book-id="@item.BookId">
                                     <td>@item.Book.BookTitle</td>
                                     <td>@item.Book.Author</td>
                                     <td>@item.Book.Category?.CategoryDesc</td>
@@ -101,25 +100,39 @@
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
-        // Live quantity update via AJAX
-        $(".qty-input").on("input", function () {
-            let row = $(this).closest("tr");
-            let bookId = row.data("book-id");
-            let quantity = $(this).val();
-
-            $.post("@Url.Action("UpdateQuantity", "Carts")", { bookId, quantity }, function (data) {
-                if (data.success) {
-                    row.find(".item-price").text(data.itemPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
-                    $("#totalPrice").text(data.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
-                }
-            });
-        });
-
-        // Restrict quantity input to English digits only
         document.addEventListener("DOMContentLoaded", function () {
+            // Restrict input to numbers only
             document.querySelectorAll("input.english-only").forEach(input => {
                 input.addEventListener("input", function () {
                     this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            });
+
+            // Live quantity update via AJAX
+            $(".qty-input").on("input", function () {
+                let row = $(this).closest("tr");
+                let bookId = row.data("book-id");
+                let maxQty = parseInt($(this).attr("max"));
+                let qty = parseInt($(this).val()) || 1;
+
+                // Clamp quantity
+                qty = Math.max(1, Math.min(qty, maxQty));
+                $(this).val(qty);
+
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("UpdateQuantity", "Carts")",
+                    data: {
+                        bookId: bookId,
+                        quantity: qty,
+                        __RequestVerificationToken: $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    success: function (data) {
+                        if (data.success) {
+                            row.find(".item-price").text(data.itemPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
+                            $("#totalPrice").text(data.totalPrice.toLocaleString('en-US', { style: 'currency', currency: 'USD' }));
+                        }
+                    }
                 });
             });
         });
