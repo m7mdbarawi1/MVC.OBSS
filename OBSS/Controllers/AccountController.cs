@@ -209,17 +209,15 @@ namespace OBSS.Controllers
             return View(user);
         }
 
-        [Authorize]
         public IActionResult HomeRedirect()
         {
             if (User.IsInRole("Admin"))
                 return RedirectToAction("AdminDashboard", "Dashboard");
-
             if (User.IsInRole("Customer"))
                 return RedirectToAction("CustomerDashboard", "Dashboard");
 
             // fallback
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("welcome", "Home");
         }
 
         [Authorize] // Only logged-in users can update their profile

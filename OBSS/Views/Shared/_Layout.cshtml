@@ -29,6 +29,7 @@
     <header>
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom shadow-sm fixed-top" id="mainNavbar">
             <div class="container-fluid">
+                
                 <!-- Logo -->
                 <a class="navbar-brand d-flex align-items-center" asp-area="" asp-controller="Account" asp-action="HomeRedirect">
                     <img src="~/OBSS-LOGO.png" alt="OBSS Logo" height="40" class="me-2" />
@@ -300,7 +301,7 @@
                 if (!text) return;
                 addMessage('user', text);
                 input.value = '';
-                setTimeout(() => addMessage('bot', "🤖 " + "Hello Dear! How can I help you? This is a future feature :)"), 400);
+                setTimeout(() => addMessage('bot', "🤖 " + "Hello Dear! How can I help you?"), 400);
             }
 
             sendBtn.addEventListener('click', sendMessage);

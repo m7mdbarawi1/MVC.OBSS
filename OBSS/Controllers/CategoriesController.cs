@@ -53,7 +53,6 @@ namespace OBSS.Controllers
         }
 
         // POST: Categories/Create
-        // POST: Categories/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]

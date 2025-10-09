@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,9 @@ namespace OBSS.Controllers
             _context = context;
         }
 
+
         // GET: Rates
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var rates = _context.Rates.Include(r => r.Book).Include(r => r.User);
@@ -27,6 +30,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Rates/Details
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int bookId, int userId)
         {
             var rate = await _context.Rates.Include(r => r.Book).Include(r => r.User).FirstOrDefaultAsync(m => m.BookId == bookId && m.UserId == userId);
@@ -36,6 +40,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Rates/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookTitle");
@@ -71,6 +76,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Rates/Edit
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int bookId, int userId)
         {
             var rate = await _context.Rates.FirstOrDefaultAsync(r => r.BookId == bookId && r.UserId == userId);
@@ -106,6 +112,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Rates/Delete
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int bookId, int userId)
         {
             var rate = await _context.Rates.Include(r => r.Book).Include(r => r.User).FirstOrDefaultAsync(m => m.BookId == bookId && m.UserId == userId);

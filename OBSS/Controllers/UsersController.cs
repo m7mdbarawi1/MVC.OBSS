@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Users
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var oBSSContext = _context.Users.Include(u => u.Gender).Include(u => u.UserTypeNavigation);
@@ -27,6 +29,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Users/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -45,6 +48,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Users/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["GenderId"] = new SelectList(_context.Genders, "GenderId", "GenderDesc");
@@ -79,6 +83,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Users/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -144,6 +149,7 @@ namespace OBSS.Controllers
         }
 
         // GET: Users/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

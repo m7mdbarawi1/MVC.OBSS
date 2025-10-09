@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using OBSS.Data;
 using OBSS.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace OBSS.Controllers
 {
@@ -21,6 +22,7 @@ namespace OBSS.Controllers
         }
 
         // GET: SalesDetails
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
             var oBSSContext = _context.SalesDetails.Include(s => s.Book).Include(s => s.Sale);
@@ -28,6 +30,7 @@ namespace OBSS.Controllers
         }
 
         // GET: SalesDetails/Details/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -46,6 +49,7 @@ namespace OBSS.Controllers
         }
 
         // GET: SalesDetails/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewData["BookId"] = new SelectList(_context.Books, "BookId", "BookId");
@@ -70,6 +74,7 @@ namespace OBSS.Controllers
         }
 
         // GET: SalesDetails/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -123,6 +128,7 @@ namespace OBSS.Controllers
         }
 
         // GET: SalesDetails/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -155,6 +161,7 @@ namespace OBSS.Controllers
         }
 
         // GET: SalesDetails/DownloadReport
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DownloadReport()
         {
             var salesDetails = await _context.SalesDetails.Include(s => s.Book).Include(s => s.Sale).ToListAsync();
