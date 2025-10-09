@@ -209,15 +209,19 @@ namespace OBSS.Controllers
             return View(user);
         }
 
+        [AllowAnonymous]
         public IActionResult HomeRedirect()
         {
-            if (User.IsInRole("Admin"))
-                return RedirectToAction("AdminDashboard", "Dashboard");
-            if (User.IsInRole("Customer"))
-                return RedirectToAction("CustomerDashboard", "Dashboard");
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                if (User.IsInRole("Admin"))
+                    return RedirectToAction("AdminDashboard", "Dashboard");
 
-            // fallback
-            return RedirectToAction("welcome", "Home");
+                if (User.IsInRole("Customer"))
+                    return RedirectToAction("CustomerDashboard", "Dashboard");
+            }
+
+            return RedirectToAction("Welcome", "Home");
         }
 
         [Authorize] // Only logged-in users can update their profile
