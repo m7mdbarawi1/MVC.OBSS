@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
-
+//new
 // 1) DbContext
 var cs = builder.Configuration.GetConnectionString("OBSS") ?? throw new InvalidOperationException("Connection string not found.");
 builder.Services.AddDbContext<OBSSContext>(opt => opt.UseSqlServer(cs));
